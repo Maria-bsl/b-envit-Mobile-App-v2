@@ -1,0 +1,120 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title class="text-uppercase text-white fw-bold">B-Envit</ion-title>
+    <ion-buttons [matMenuTriggerFor]="belowMenu" [collapse]="true" slot="end">
+      <ion-button color="light">
+        <ion-icon slot="icon-only" name="person-circle"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <mat-menu #belowMenu="matMenu" yPosition="below">
+      <button mat-menu-item (click)="changepass()">Change Password</button>
+      <button mat-menu-item (click)="logout()">Logout</button>
+    </mat-menu>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content
+      pullingIcon="chevron-down-circle-outline"
+      pullingText="Pull to refresh"
+      refreshingSpinner="circles"
+      refreshingText="Refreshing..."
+    >
+    </ion-refresher-content>
+  </ion-refresher>
+  <div class="bo">
+    <!-- <ion-grid>
+      <ion-row
+        style="border: 2px solid grey; border-radius: 5px; border-style: double"
+      >
+        <ion-col size="6">
+          <h1 style="text-align: center; color: green">{{guestIn}}</h1>
+          <p style="text-align: center">Visitor In</p>
+        </ion-col>
+        <ion-col size="6">
+          <h1 style="text-align: center; color: red">
+            {{totalGuest - guestIn}}
+          </h1>
+          <p style="text-align: center">Visitor Remains</p>
+        </ion-col>
+      </ion-row>
+    </ion-grid> -->
+    <ion-grid class="event-detail-grid">
+      <ion-row>
+        <ion-col size="6" class="d-inline-flex">
+          <p class="fw-bold mr-1">Event:</p>
+          <p class="text-uppercase">{{eventname}}</p>
+        </ion-col>
+        <ion-col size="6" class="d-inline-flex justify-content-end">
+          <p class="fw-bold text-right mr-1">Date:</p>
+          <p class="text-right">{{'Thu Oct 24 2024'}}</p>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="6" class="d-inline-flex">
+          <p class="fw-bold mr-1">Total visitors:</p>
+          <p class="total-visitors">{{totalGuest}}</p>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="12">
+          <mat-slider
+            class="w-100"
+            min="0"
+            max="100000"
+            step="1000"
+            showTickMarks
+            discrete
+            [displayWith]="formatLabel"
+          >
+            <input matSliderThumb />
+          </mat-slider>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+  <div (click)="startScanning()" class="qrClass">
+    <img
+      src="assets/icon/qr-code.png"
+      alt="centered image"
+      style="margin-top: 20px"
+      width="100px"
+    />
+  </div>
+  <div class="msg">Click here to Verify Guest</div>
+
+  <div class="last">
+    <ion-searchbar
+      showCancelButton="focus"
+      [(ngModel)]="filterTerm"
+    ></ion-searchbar>
+  </div>
+
+  <div style="overflow-x: auto">
+    <table class="table table-striped table table-striped">
+      <thead>
+        <tr *ngIf="listOfInvitee">
+          <th>Visitor Name</th>
+          <th>card scaned</th>
+          <th>Table No</th>
+          <th>Verified by</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let invitee of listOfInvitee |filter:filterTerm | paginate: { itemsPerPage: 5, currentPage: cp }"
+          class="listMargin"
+        >
+          <td>{{invitee.visitor_name}}</td>
+          <td>{{invitee.scan_status}}</td>
+          <td>{{invitee.table_number}}</td>
+          <td>{{invitee.scanned_by}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <pagination-controls
+      (pageChange)="cp = $event"
+      *ngIf="listOfInvitee"
+    ></pagination-controls>
+  </div>
+</ion-content>

@@ -1,0 +1,35 @@
+<!-- <ion-buttons >
+  <ion-button [mat-dialog-close]="true"  slot="end">
+    <ion-icon name="close" color="danger"></ion-icon>
+   </ion-button>
+</ion-buttons> -->
+<mat-dialog-content class="mat-typography">
+  <div class="eventimg">
+    <img src="assets/icon/planner.png" height="60">
+  </div>
+  <!-- <p>Welcome Jimmy boaz </p> -->
+  <mat-form-field appearance="outline" style="width: 100%;">
+  <mat-label>Select Event </mat-label>
+  <mat-select [(ngModel)]="postData.event_id" name="event_id">
+    <mat-option value="" selected>Select Event</mat-option>
+    <mat-option *ngFor="let event of Events" (onSelectionChange)="onSelect(event)" value={{event.event_id}}>{{event.event_name}}</mat-option>
+  </mat-select>
+ </mat-form-field>
+
+ </mat-dialog-content>
+
+
+<ion-grid>
+  <ion-row>
+    <ion-col size="6">
+      <mat-dialog-actions align="start">
+        <ion-button mat-button [mat-dialog-close]="true" color="danger" name="close-outline" >cancel</ion-button>
+      </mat-dialog-actions>
+    </ion-col>
+    <ion-col size="6">
+      <mat-dialog-actions align="end">
+        <ion-button mat-button [mat-dialog-close]="true" (click)="loginEvent()" name="close-outline" >Next</ion-button>
+      </mat-dialog-actions>
+    </ion-col>
+  </ion-row>
+</ion-grid>

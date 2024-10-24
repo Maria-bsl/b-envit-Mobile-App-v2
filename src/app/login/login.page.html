@@ -1,0 +1,127 @@
+<!-- <ion-content>
+  <div id="container">
+    <div id="header">
+      <img src="assets/icon/E-nvit.jpg" />
+      <h2>B - e n v i t</h2>
+      <hr class="line" />
+    </div>
+    <form id="form">
+      <mat-form-field appearance="outline" style="width: 100%">
+        <mat-label>Mobile Number</mat-label>
+        <input
+          matInput
+          type="number"
+          placeholder="Enter Mobile"
+          [(ngModel)]="PostData.mobile_number"
+          name="mobile_number"
+          autocomplete="off"
+          required
+        />
+      </mat-form-field>
+      <mat-form-field appearance="outline" style="width: 100%">
+        <mat-label>Password</mat-label>
+        <input
+          matInput
+          placeholder="Enter Password"
+          type="password"
+          [(ngModel)]="PostData.password"
+          name="password"
+          autocomplete="off"
+          required
+        />
+      </mat-form-field>
+      <ion-button expand="block" (click)="onClickLogin()">Login</ion-button>
+    </form>
+
+    <p style="text-align: right; margin-right: 24px; margin-top: 5px">
+      <ion-router-link (click)="resetpage()">Forgot password ?</ion-router-link>
+    </p>
+    <div class="bizlogo">
+      <a href="http://bizlogicsolutions.com/"
+        ><img src="assets/icon/Biz-Logic.png"
+      /></a>
+    </div>
+  </div>
+</ion-content> -->
+
+<ion-content>
+  <div id="container">
+    <div id="header">
+      <img src="assets/icon/E-nvit.jpg" />
+      <h2>B - e n v i t</h2>
+      <p class="font-weight-normal welcome-text">Sign in to your account</p>
+      <hr class="line" />
+    </div>
+    <form
+      (ngSubmit)="onClickLogin()"
+      [formGroup]="loginForm"
+      id="form"
+      class="d-flex flex-column"
+    >
+      <div class="d-flex flex-column w-100">
+        <div class="small fw-bold">Mobile Number</div>
+        <mat-form-field appearance="outline" class="w-100">
+          <input
+            matInput
+            type="tel"
+            placeholder="Enter Mobile"
+            [formControl]="mobile_number"
+            name="mobile_number"
+            autocomplete="off"
+            required
+          />
+          <mat-hint
+            *ngIf="mobile_number.value && !mobile_number.value.startsWith('0') "
+            align="end"
+          >
+            <strong> Mobile numbers must start with 0. </strong>
+          </mat-hint>
+          <mat-error>
+            <ng-container *ngIf="mobile_number.hasError('required');">
+              Please fill
+            </ng-container>
+            <ng-container *ngIf="mobile_number.hasError('pattern');">
+              Invalid phone number.
+            </ng-container>
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="d-flex flex-column d-flex">
+        <div class="small fw-bold">Password</div>
+        <mat-form-field appearance="outline" style="width: 100%">
+          <input
+            matInput
+            placeholder="Enter Password"
+            type="password"
+            [formControl]="password"
+            name="password"
+            autocomplete="off"
+            required
+          />
+          <mat-error>Please fill</mat-error>
+        </mat-form-field>
+      </div>
+      <div class="d-flex align-items-center justify-content-end">
+        <button (click)="resetpage()" mat-button type="button" color="primary">
+          Forgot Password?
+        </button>
+      </div>
+
+      <!-- <ion-button type="ngSubmit" form="form" expand="block">Login</ion-button> -->
+      <button
+        color="accent"
+        form="form"
+        class="my-4"
+        expand="block"
+        mat-raised-button
+        type="ngSubmit"
+      >
+        Log In
+      </button>
+    </form>
+
+    <div class="bizlogo">
+      <a><img src="assets/icon/Biz-Logic.png" /></a>
+    </div>
+  </div>
+</ion-content>

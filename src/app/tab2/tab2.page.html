@@ -1,0 +1,46 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>List of all visitors</ion-title>
+   <!-- <ion-text style="text-align: center;">{{eventname}} </ion-text> -->
+    <ion-buttons slot="end">
+      <ion-button (click)="addInvitees()">
+        <ion-icon name="add" size="large"  color="light"></ion-icon>
+      </ion-button>
+     </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <ion-searchbar [(ngModel)]="filterTerm"  showCancelButton="focus"></ion-searchbar>
+  <div style="overflow-x: auto; overflow-y: auto;">
+  <table class="table table-striped table table-striped" style="position:sticky">
+    <thead>
+      <tr>
+        <!-- <th>#</th> -->
+        <th>Visitor Name</th>
+        <!-- <th>Card State</th> -->
+        <th>Size</th>
+        <th>Table</th>
+        <th>Mobile  </th>
+       </tr>
+    </thead>
+    <tbody>
+      <!-- |  filter:filterTerm  -->
+      <tr *ngFor="let invitee of listOfInvitee |filter:filterTerm | paginate: { itemsPerPage: 8, currentPage: cp }" class="listMargin">
+        <td>{{invitee.visitor_name}}</td>
+        <!-- <td>{{invitee.card_state}}</td> -->
+        <td style="text-align: center;">{{invitee.no_of_persons}}</td>
+        <td>{{invitee.table_number}}</td>
+        <td>{{invitee.mobile_no}}</td>
+        <!-- <td style="text-align: center"><ion-icon  mat-button [matMenuTriggerFor]="belowMenu" name="ellipsis-vertical-outline" color="success"></ion-icon></td> -->
+        <!-- <td><div class="bn">
+          <ion-button (click)="sendQr(invitee.qr_code )">verify</ion-button>
+        </div></td> -->
+       </tr>
+    </tbody>
+  </table>
+  </div>
+  <mat-menu #belowMenu="matMenu" yPosition="below">
+      <button class="btn btn-primary" mat-menu-item (click)="checkIn()">Check In</button>
+  </mat-menu>
+  <pagination-controls (pageChange)="cp= $event"></pagination-controls>
+</ion-content>

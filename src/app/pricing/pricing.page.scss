@@ -1,0 +1,60 @@
+ion-content{
+     
+  #header{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 50px;
+
+    h1{
+        font-weight: 700;
+        font-size: 25px;
+        color: #010100;
+        margin-bottom:15%;
+
+    }
+    img{
+        width: 125px;
+        height: 125px;
+        --background: ghostwhite;
+        // border-radius: 50px;
+        // border: 8px solid #ffffff;
+
+    }
+}
+.priceH{
+    p{
+        text-align: center;
+        font-size: 2.2rem;
+        line-height: 1.2;
+        font-weight: 400;
+        padding: 6px;
+        text-transform: uppercase;
+        border: 1px solid orange;
+        border-radius: 10px;
+        font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif
+    }
+}
+ion-slides{
+    margin-top: 30px;
+}
+.box1{
+    width: auto;
+    p{
+            font-size: 1.1rem;
+            border-radius:5px;
+            border: solid #2C2A7D 1px;
+            padding: 10px;
+            width: 100%;
+             background-color: #2C2A7D;
+            color: gold;
+            
+    }
+    ul {
+        li{
+            line-height: 1.2em;
+            text-align: left;
+          }
+    }
+}
+}

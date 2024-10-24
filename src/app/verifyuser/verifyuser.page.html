@@ -1,0 +1,97 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <!-- <ion-title>dashboard</ion-title> -->
+   <ion-text style="text-align: center;">{{eventname}} </ion-text>
+    <ion-buttons slot="start">
+      <ion-menu-button color="light"></ion-menu-button>
+    </ion-buttons>
+    <!-- <ion-buttons slot="start">
+     <ion-icon name="close-outline"></ion-icon>
+    </ion-buttons> -->
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <ion-grid style="margin-top:30%">
+    <ion-row>
+      <ion-col size="12">
+        <ion-card>
+          <ion-card-content>
+            <!-- event_id":2,"visitor_name":"Patrick John","unchecked_invitee":2,"table_number":"Table123 -->
+            <ion-grid>
+              <ion-row>
+                <ion-col size="6">Visitor Name</ion-col>
+                <ion-col size="6">{{qrinfo.visitor_name}}</ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size="6">Number of Visitor</ion-col>
+                <ion-col size="6">{{qrinfo.unchecked_invitee}}</ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size="6">Table Number</ion-col>
+                <ion-col size="6">{{qrinfo.table_number}}</ion-col>
+                <!-- <ion-col size="6">{{input}}</ion-col> -->
+
+              </ion-row>
+            </ion-grid>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+    <!-- <p style="text-align: center">Enter number of visitor</p> -->
+    <p style="font-size:1.1em; color:black; text-align:center">Number of Visitor :{{input}}</p>
+    
+    <!-- <mat-form-field appearance="outline" style="width: 100%;" placeholder="Select number of Invitee">
+       <mat-select [(ngModel)]="postData.Number_Of_CheckingIn_Invitees" name="Number_Of_CheckingIn_Invitees">
+        <mat-option *ngFor="let no of count" [value]="no">{{no}}</mat-option>
+      </mat-select>
+    </mat-form-field> -->
+        <!-- <ion-button (click)="verify" expand="block" (click)="verifyuser()">verify</ion-button> -->
+      <ion-row>
+        <ion-col size="4">
+          <ion-button expand="block"  (click)="pressNum('1')">1</ion-button>
+        </ion-col>
+        <ion-col size="4">
+          <ion-button  expand="block"  (click)="pressNum('2')">2</ion-button>
+        </ion-col>
+        <ion-col size="4">
+          <ion-button  expand="block"  (click)="pressNum('3')">3</ion-button>
+        </ion-col>
+     </ion-row>
+     <ion-row>
+      <ion-col size="4">
+        <ion-button expand="block"  (click)="pressNum('4')">4</ion-button>
+      </ion-col>
+      <ion-col size="4">
+        <ion-button  expand="block"  (click)="pressNum('5')">5</ion-button>
+      </ion-col>
+      <ion-col size="4">
+        <ion-button  expand="block"  (click)="pressNum('6')">6</ion-button>
+      </ion-col>
+   </ion-row>
+   <ion-row>
+    <ion-col size="4" >
+      <ion-button expand="block"  (click)="pressNum('7')">7</ion-button>
+    </ion-col>
+    <ion-col size="4">
+      <ion-button  expand="block" (click)="pressNum('8')" >8</ion-button>
+    </ion-col>
+    <ion-col size="4">
+      <ion-button  expand="block"  (click)="pressNum('9')">9</ion-button>
+    </ion-col>
+ </ion-row>
+
+     <ion-row>
+      <ion-col size="4">
+        <ion-button expand="block" color="danger" (click)="allClear()">Clear</ion-button>
+
+      </ion-col>
+      <ion-col size="4">
+        <ion-button  expand="block"  (click)="pressNum('0')">0</ion-button>
+      </ion-col>
+      <ion-col size="4">
+        <ion-button expand="block" color="success" (click)="verifyuser()">Verify</ion-button>
+      </ion-col>
+     </ion-row>
+
+  </ion-grid>
+</ion-content>
