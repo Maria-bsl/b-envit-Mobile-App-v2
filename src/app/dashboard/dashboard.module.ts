@@ -10,14 +10,18 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { MatLegacyMenuModule as MatMenuModule } from '@angular/material/legacy-menu';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { NgChartsModule } from 'ng2-charts';
-import { MatLegacySliderModule as MatSliderModule } from '@angular/material/legacy-slider';
+import { MatSliderModule } from '@angular/material/slider';
 import { HighchartsChartModule } from 'highcharts-angular';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
+    MatFormFieldModule,
+    MatInputModule,
     MatSliderModule,
     MatMenuModule,
     MatDialogModule,

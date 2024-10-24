@@ -9,7 +9,7 @@ import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { ActivatedRoute, Router, NavigationExtras } from '@angular/router';
 import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner/ngx';
 import { LoadingController, Platform } from '@ionic/angular';
-import { from } from 'rxjs';
+import { from, Subscription } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 // import { QrresultPage, userData } from '../qrresult/qrresult.page';
 import { ServiceService } from '../services/service.service';
@@ -50,6 +50,7 @@ export class DashboardPage implements OnInit, AfterViewInit {
   tableno: any;
   thead: string;
   Highcharts: typeof Highcharts = Highcharts;
+  subscriptions: Subscription[] = [];
   chartOptions: Highcharts.Options = {
     credits: {
       enabled: false, //watch out for production
@@ -185,40 +186,69 @@ export class DashboardPage implements OnInit, AfterViewInit {
       },
     });
   }
+  // startScanning() {
+  //   // Optionally request the permission early
+  //   this.qrScanner.prepare().then((status: QRScannerStatus) => {
+  //     if (status.authorized) {
+  //       this.qrScanner.show();
+  //       this.scanSub = document.getElementsByTagName('body')[0].style.opacity =
+  //         '0';
+  //       // debugger
+
+  //       this.scanSub = this.qrScanner
+  //         .scan()
+
+  //         .subscribe(
+  //           (textFound: string) => {
+  //             document.getElementsByTagName('body')[0].style.opacity = '1';
+
+  //             this.qrScanner.hide();
+  //             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+  //             this.qrScanner.destroy();
+  //             // this.qrScanner.unsubscribe();
+  //             this.qrText = textFound;
+  //             // this.openModal(this.qrText);
+  //             this.sendResult(this.qrText);
+  //           },
+  //           (err) => {
+  //             alert(JSON.stringify(err));
+  //           }
+  //         );
+  //       // this.scanActive =true;
+  //     } else if (status.denied) {
+  //       this.qrScanner.hide();
+  //     } else {
+  //     }
+  //   });
+  // }
   startScanning() {
-    // Optionally request the permission early
-    this.qrScanner.prepare().then((status: QRScannerStatus) => {
-      if (status.authorized) {
-        this.qrScanner.show();
-        this.scanSub = document.getElementsByTagName('body')[0].style.opacity =
-          '0';
-        // debugger
-
-        this.scanSub = this.qrScanner
-          .scan()
-
-          .subscribe(
-            (textFound: string) => {
-              document.getElementsByTagName('body')[0].style.opacity = '1';
-
+    let body = document.getElementsByTagName('body')[0];
+    //Optionally request the permission early
+    this.qrScanner
+      .prepare()
+      .then((status) => {
+        if (status.denied) {
+          this.qrScanner.hide();
+        } else if (status.authorized) {
+          this.qrScanner.show();
+          body.style.opacity = '0';
+          this.scanSub = this.qrScanner.scan().subscribe({
+            next: (textFound) => {
+              body.style.opacity = '1';
               this.qrScanner.hide();
-              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
               this.qrScanner.destroy();
-              // this.qrScanner.unsubscribe();
+              if (this.scanSub) {
+                this.scanSub.unsubscribe();
+              }
               this.qrText = textFound;
-              // this.openModal(this.qrText);
               this.sendResult(this.qrText);
             },
-            (err) => {
-              alert(JSON.stringify(err));
-            }
-          );
-        // this.scanActive =true;
-      } else if (status.denied) {
-        this.qrScanner.hide();
-      } else {
-      }
-    });
+          });
+        }
+      })
+      .catch((err) => {
+        throw err;
+      });
   }
   sendResult(qrText: any) {
     const navigationExtras: NavigationExtras = {

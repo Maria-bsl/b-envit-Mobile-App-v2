@@ -22,65 +22,50 @@
     >
     </ion-refresher-content>
   </ion-refresher>
-  <div class="bo">
-    <!-- <ion-grid>
-      <ion-row
-        style="border: 2px solid grey; border-radius: 5px; border-style: double"
-      >
-        <ion-col size="6">
-          <h1 style="text-align: center; color: green">{{guestIn}}</h1>
-          <p style="text-align: center">Visitor In</p>
-        </ion-col>
-        <ion-col size="6">
-          <h1 style="text-align: center; color: red">
-            {{totalGuest - guestIn}}
-          </h1>
-          <p style="text-align: center">Visitor Remains</p>
-        </ion-col>
-      </ion-row>
-    </ion-grid> -->
-    <ion-grid class="event-detail-grid">
-      <ion-row>
-        <ion-col size="6" class="d-inline-flex">
-          <p class="fw-bold mr-1">Event:</p>
-          <p class="text-truncate">{{eventname}}</p>
-        </ion-col>
-        <ion-col size="6" class="d-inline-flex justify-content-end">
-          <p class="fw-bold text-right mr-1">Date:</p>
-          <p class="text-right text-truncate">{{'Thu Oct 24 2024'}}</p>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size="6">
-          <highcharts-chart
-            #chartCol
-            [Highcharts]="Highcharts"
-            [options]="chartOptions"
-          >
-          </highcharts-chart>
-        </ion-col>
-        <ion-col size="6" class="d-flex flex-column">
-          <div class="visitor-stats d-flex flex-column align-items-end mb-4">
-            <ion-text class="mb-2"> Visitors In </ion-text>
-            <ion-text color="success"> {{guestIn}} </ion-text>
-          </div>
-          <div class="visitor-stats d-flex flex-column align-items-end">
-            <ion-text class="mb-2"> Visitors remaining </ion-text>
-            <ion-text color="danger"> {{totalGuest - guestIn}} </ion-text>
-          </div>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </div>
-  <div (click)="startScanning()" class="qrClass">
+  <ion-grid class="event-detail-grid">
+    <ion-row>
+      <ion-col size="6" class="d-inline-flex">
+        <p class="fw-bold mr-1">Event:</p>
+        <p class="text-truncate">{{eventname}}</p>
+      </ion-col>
+      <ion-col size="6" class="d-inline-flex justify-content-end">
+        <p class="fw-bold text-right mr-1">Date:</p>
+        <p class="text-right text-truncate">{{'Thu Oct 24 2024'}}</p>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="6">
+        <highcharts-chart
+          #chartCol
+          [Highcharts]="Highcharts"
+          [options]="chartOptions"
+        >
+        </highcharts-chart>
+      </ion-col>
+      <ion-col size="6" class="d-flex flex-column">
+        <div class="visitor-stats d-flex flex-column align-items-end mb-4">
+          <ion-text class="mb-2"> Visitors In </ion-text>
+          <ion-text color="success"> {{guestIn}} </ion-text>
+        </div>
+        <div class="visitor-stats d-flex flex-column align-items-end">
+          <ion-text class="mb-2"> Visitors remaining </ion-text>
+          <ion-text color="danger"> {{totalGuest - guestIn}} </ion-text>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <div
+    (click)="startScanning()"
+    class="qrClass d-flex flex-column w-100 justify-content-center align-items-center"
+  >
     <img
       src="assets/icon/qr-code.png"
       alt="centered image"
       style="margin-top: 20px"
       width="100px"
     />
+    <ion-text class="mt-1">Click here to Verify Guest</ion-text>
   </div>
-  <div class="msg">Click here to Verify Guest</div>
 
   <div class="last">
     <ion-searchbar
