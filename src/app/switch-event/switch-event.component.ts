@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { MatListModule, MatSelectionList } from '@angular/material/list';
-import { MatRadioModule } from '@angular/material/radio';
+import { MatLegacyListModule as MatListModule, MatLegacySelectionList as MatSelectionList } from '@angular/material/legacy-list';
+import { MatLegacyRadioModule as MatRadioModule } from '@angular/material/legacy-radio';
 import { Router, NavigationExtras } from '@angular/router';
 import { IonicModule, LoadingController } from '@ionic/angular';
 import { finalize } from 'rxjs/operators';
@@ -12,7 +12,7 @@ import { AppUtilities } from '../core/utils/app-utilities';
 import { EventChoice } from '../services/params/eventschoice';
 import { ServiceService } from '../services/service.service';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
+import { MatLegacyButtonModule as MatButtonModule } from '@angular/material/legacy-button';
 
 @Component({
   selector: 'app-switch-event',

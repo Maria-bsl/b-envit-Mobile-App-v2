@@ -7,7 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { QrpagePageRoutingModule } from './qrpage-routing.module';
 
 import { QrpagePage } from './qrpage.page';
-import { MatSelectModule } from '@angular/material/select';
+import { MatLegacySelectModule as MatSelectModule } from '@angular/material/legacy-select';
 // import {MatSelectModule} from '@angular/material/select';
 // import {MatSelectModule} from '@angular/material/select';
 @NgModule({

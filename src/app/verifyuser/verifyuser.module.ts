@@ -7,7 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { VerifyuserPageRoutingModule } from './verifyuser-routing.module';
 
 import { VerifyuserPage } from './verifyuser.page';
-import { MatSelectModule } from '@angular/material/select';
+import { MatLegacySelectModule as MatSelectModule } from '@angular/material/legacy-select';
 
 @NgModule({
   imports: [

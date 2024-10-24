@@ -15,8 +15,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { QRScanner } from '@ionic-native/qr-scanner/ngx';
 import { HttpClientModule } from '@angular/common/http';
 import { EventselectionPipe } from './eventselection.pipe';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatSelectModule } from '@angular/material/select';
+import { MatLegacyAutocompleteModule as MatAutocompleteModule } from '@angular/material/legacy-autocomplete';
+import { MatLegacySelectModule as MatSelectModule } from '@angular/material/legacy-select';
 import { HTTP } from '@ionic-native/http/ngx'; //<=== Import this
 import { HighchartsChartModule } from 'highcharts-angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
