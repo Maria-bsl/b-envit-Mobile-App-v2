@@ -43,32 +43,31 @@
       <ion-row>
         <ion-col size="6" class="d-inline-flex">
           <p class="fw-bold mr-1">Event:</p>
-          <p class="text-uppercase">{{eventname}}</p>
+          <p class="text-truncate">{{eventname}}</p>
         </ion-col>
         <ion-col size="6" class="d-inline-flex justify-content-end">
           <p class="fw-bold text-right mr-1">Date:</p>
-          <p class="text-right">{{'Thu Oct 24 2024'}}</p>
+          <p class="text-right text-truncate">{{'Thu Oct 24 2024'}}</p>
         </ion-col>
       </ion-row>
       <ion-row>
-        <ion-col size="6" class="d-inline-flex">
-          <p class="fw-bold mr-1">Total visitors:</p>
-          <p class="total-visitors">{{totalGuest}}</p>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size="12">
-          <mat-slider
-            class="w-100"
-            min="0"
-            max="100000"
-            step="1000"
-            showTickMarks
-            discrete
-            [displayWith]="formatLabel"
+        <ion-col size="6">
+          <highcharts-chart
+            #chartCol
+            [Highcharts]="Highcharts"
+            [options]="chartOptions"
           >
-            <input matSliderThumb />
-          </mat-slider>
+          </highcharts-chart>
+        </ion-col>
+        <ion-col size="6" class="d-flex flex-column">
+          <div class="visitor-stats d-flex flex-column align-items-end mb-4">
+            <ion-text class="mb-2"> Visitors In </ion-text>
+            <ion-text color="success"> {{guestIn}} </ion-text>
+          </div>
+          <div class="visitor-stats d-flex flex-column align-items-end">
+            <ion-text class="mb-2"> Visitors remaining </ion-text>
+            <ion-text color="danger"> {{totalGuest - guestIn}} </ion-text>
+          </div>
         </ion-col>
       </ion-row>
     </ion-grid>

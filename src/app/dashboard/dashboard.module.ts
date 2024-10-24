@@ -11,6 +11,7 @@ import { MatLegacyMenuModule as MatMenuModule } from '@angular/material/legacy-m
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { NgChartsModule } from 'ng2-charts';
 import { MatLegacySliderModule as MatSliderModule } from '@angular/material/legacy-slider';
+import { HighchartsChartModule } from 'highcharts-angular';
 
 @NgModule({
   imports: [
@@ -22,6 +23,7 @@ import { MatLegacySliderModule as MatSliderModule } from '@angular/material/lega
     MatDialogModule,
     Ng2SearchPipeModule,
     NgxPaginationModule,
+    HighchartsChartModule,
     NgChartsModule,
     NgCircleProgressModule.forRoot({
       // set defaults here

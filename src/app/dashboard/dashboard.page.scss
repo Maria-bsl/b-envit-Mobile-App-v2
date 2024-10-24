@@ -81,6 +81,12 @@ ion-content {
     color: #3880ff;
     font-size: 24px;
   }
+  .event-detail-grid ion-row ion-col .visitor-stats ion-text:first-child {
+    font-size: 16px;
+  }
+  .event-detail-grid ion-row ion-col .visitor-stats ion-text:last-child {
+    font-size: 32px;
+  }
   .event-detail-grid ion-row:first-child {
     background-color: #ffffff;
   }

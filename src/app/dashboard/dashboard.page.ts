@@ -1,4 +1,10 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { ActivatedRoute, Router, NavigationExtras } from '@angular/router';
 import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner/ngx';
@@ -8,13 +14,14 @@ import { finalize } from 'rxjs/operators';
 // import { QrresultPage, userData } from '../qrresult/qrresult.page';
 import { ServiceService } from '../services/service.service';
 import { Chart } from 'chart.js';
+import * as Highcharts from 'highcharts';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.scss'],
 })
-export class DashboardPage implements OnInit {
+export class DashboardPage implements OnInit, AfterViewInit {
   scanSub: any;
   qrText: string;
   userInfo: any;
@@ -22,6 +29,7 @@ export class DashboardPage implements OnInit {
   guestIn = 0;
   remains = 0;
   totalGuest = 0;
+  //totalVisitors = signal
   eventname: string;
   filterTerm: string;
   scanActive: boolean;
@@ -41,6 +49,56 @@ export class DashboardPage implements OnInit {
   inviteeArr: any;
   tableno: any;
   thead: string;
+  Highcharts: typeof Highcharts = Highcharts;
+  chartOptions: Highcharts.Options = {
+    credits: {
+      enabled: false, //watch out for production
+    },
+    chart: {
+      height: 200,
+      width: 200,
+      backgroundColor: 'transparent',
+    },
+    title: {
+      verticalAlign: 'middle',
+      floating: true,
+      text: `${this.totalGuest}`,
+      y: -2,
+      style: {
+        fontSize: '24px',
+      },
+    },
+    subtitle: {
+      verticalAlign: 'middle',
+      floating: true,
+      text: 'Total',
+      y: 16,
+      style: {
+        fontSize: '16px',
+      },
+    },
+    series: [
+      {
+        type: 'pie',
+        data: [
+          { y: 150, color: '#2dd36f', name: 'In' },
+          {
+            y: 50,
+            color: '#eb445a',
+            name: 'Remaining',
+          },
+        ],
+        innerSize: '80%',
+      },
+    ],
+  };
+  //@ViewChild('chartCol') chartCol!: any;
+  ngAfterViewInit(): void {
+    //let el = this.chartCol.el as ElementRef;
+    //console.log(el.nativeElement);
+    //console.log(el.nativeElement.offsetWidth);
+    //console.log(this.chartCol.el);
+  }
   constructor(
     private loadingCtrl: LoadingController,
     private service: ServiceService,
