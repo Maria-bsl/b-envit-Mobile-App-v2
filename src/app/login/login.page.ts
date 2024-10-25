@@ -150,7 +150,9 @@ export class LoginPage implements OnInit {
   tryevent() {
     this.router.navigate(['pricing']);
   }
-  ngOnInit() {}
+  ngOnInit() {
+    localStorage.clear();
+  }
   get mobile_number() {
     return this.loginForm.get('mobile_number') as FormControl;
   }

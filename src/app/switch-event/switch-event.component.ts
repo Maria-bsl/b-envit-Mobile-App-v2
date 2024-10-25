@@ -42,6 +42,22 @@ export class SwitchEventComponent implements OnInit {
   ) {}
   ngOnInit() {
     this.eventsList = history.state.data;
+    if (!this.eventsList) {
+      this.eventsList = JSON.parse(localStorage.getItem('event_details_list'));
+      if (!this.eventsList) {
+        this.router.navigate(['login']);
+      } else {
+        let eventId = localStorage.getItem('event_id');
+        if (eventId !== undefined && eventId !== null) {
+          let found = this.eventsList.find(
+            (c) => c.event_id === Number(eventId)
+          );
+          if (found) {
+            this.selected = this.eventsList.indexOf(found);
+          }
+        }
+      }
+    }
   }
   eventChanged(index: any) {
     if (index < 0 || index > this.eventsList.length - 1)
@@ -58,6 +74,10 @@ export class SwitchEventComponent implements OnInit {
         data_from_user: selected.event_id,
       },
     };
+    localStorage.setItem(
+      'event_id',
+      this.eventsList.at(this.selected).event_id.toString()
+    );
     this.router.navigateByUrl('tabs/dashboard', navigationExtras);
   }
   async openDashboard() {

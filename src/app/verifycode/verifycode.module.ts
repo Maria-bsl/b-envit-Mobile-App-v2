@@ -7,14 +7,16 @@ import { IonicModule } from '@ionic/angular';
 import { VerifycodePageRoutingModule } from './verifycode-routing.module';
 
 import { VerifycodePage } from './verifycode.page';
+import { MatLegacyMenuModule as MatMenuModule } from '@angular/material/legacy-menu';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    VerifycodePageRoutingModule
+    MatMenuModule,
+    VerifycodePageRoutingModule,
   ],
-  declarations: [VerifycodePage]
+  declarations: [VerifycodePage],
 })
 export class VerifycodePageModule {}

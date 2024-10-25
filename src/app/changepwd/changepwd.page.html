@@ -1,4 +1,4 @@
-<ion-content class="ion-padding">
+<!-- <ion-content class="ion-padding">
   <ion-icon name="arrow-back" (click)="backBtn()" style="font-size: 1.4em;"></ion-icon>
   
   <div class="content ion-padding">
@@ -7,24 +7,134 @@
     </div>
     <div class="ion-text-center heading ion-padding">Change Password</div>
     <div class="ion-text-center ion-padding">
-      <!-- <p>Please Enter valid mobile number </p> -->
     </div>
     <p style="width: 100%; margin-top: -15px;">
      
       <mat-form-field appearance="outline" style="width: 100%;">
         <mat-label>Curent Password</mat-label>
-        <!-- <input matInput placeholder="Enter Email" [(ngModel)]="postEmail.Email_Address" name="Email_Address" email aria-autocomplete="off">       -->
         <input matInput placeholder="Current Password" [(ngModel)]="postData.current_password" type="password">      
       </mat-form-field> 
       <mat-form-field appearance="outline" style="width: 100%;">
         <mat-label>New Password</mat-label>
-        <!-- <input matInput placeholder="Enter Email" [(ngModel)]="postEmail.Email_Address" name="Email_Address" email aria-autocomplete="off">       -->
         <input matInput placeholder="New password" [(ngModel)]="postData.New_Password" type="password">      
       </mat-form-field> 
     </p>
       <ion-button expand="block" (click)="changPass()">Confirm</ion-button> 
      
   </div>
+</ion-content> -->
+
+<ion-content class="ion-padding">
+  <ion-icon
+    name="arrow-back"
+    (click)="backBtn()"
+    style="font-size: 1.4em"
+  ></ion-icon>
+
+  <div class="content ion-padding">
+    <div class="ion-text-center">
+      <img src="assets/icon/E-nvit.jpg" />
+    </div>
+    <div class="ion-text-center heading ion-padding">Change Password</div>
+    <div class="ion-text-center ion-padding">
+      <!-- <p>Please Enter valid mobile number </p> -->
+    </div>
+    <!-- <p style="width: 100%; margin-top: -15px">
+      <mat-form-field appearance="outline" style="width: 100%">
+        <mat-label>Curent Password</mat-label>
+        <input
+          matInput
+          placeholder="Current Password"
+          [(ngModel)]="postData.current_password"
+          type="password"
+        />
+      </mat-form-field>
+      <mat-form-field appearance="outline" style="width: 100%">
+        <mat-label>New Password</mat-label>
+        <input
+          matInput
+          placeholder="New password"
+          [(ngModel)]="postData.New_Password"
+          type="password"
+        />
+      </mat-form-field>
+    </p> -->
+    <div class="d-flex flex-column w-100">
+      <div class="d-flex flex-column w-100">
+        <div class="small fw-bold">Current Password</div>
+        <mat-form-field appearance="outline" class="w-100">
+          <input
+            matInput
+            type="password"
+            placeholder="Your current password"
+            [formControl]="current_password"
+            autocomplete="off"
+          />
+          <mat-error>
+            <ng-container *ngIf="current_password.hasError('required');">
+              Please, enter your current password.
+            </ng-container>
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="d-flex flex-column w-100">
+        <div class="small fw-bold">Create Password</div>
+        <mat-form-field appearance="outline" class="w-100">
+          <input
+            matInput
+            type="password"
+            placeholder="Create password"
+            [formControl]="Create_Password"
+            autocomplete="off"
+          />
+          <mat-error>
+            <ng-container *ngIf="Create_Password.hasError('required');">
+              Please, enter a new password.
+            </ng-container>
+            <ng-container *ngIf="Create_Password.hasError('matching');">
+              Passwords do not match.
+            </ng-container>
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="d-flex flex-column w-100">
+        <div class="small fw-bold">Confirm Password</div>
+        <mat-form-field appearance="outline" class="w-100">
+          <input
+            matInput
+            type="password"
+            placeholder="Confirm password"
+            [formControl]="New_Password"
+            autocomplete="off"
+          />
+          <mat-error>
+            <!-- <ng-container *ngIf="New_Password.hasError('required');">
+              Please, fill.
+            </ng-container>
+            <ng-container *ngIf="New_Password.hasError('matching');">
+              Passwords do not match.
+            </ng-container> -->
+            <ng-container
+              *ngIf="New_Password.hasError('required') && New_Password.hasError('matching');"
+            >
+              Please, fill.
+            </ng-container>
+            <ng-container
+              *ngIf="New_Password.hasError('required') && !New_Password.hasError('matching');"
+            >
+              Please, fill.
+            </ng-container>
+            <ng-container
+              *ngIf="New_Password.hasError('matching') && !New_Password.hasError('required');"
+            >
+              Passwords do not match.
+            </ng-container>
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+    <ion-button expand="block" (click)="changPass()">Confirm</ion-button>
+  </div>
 </ion-content>
 <!-- <p>Don't have an account?<button [routerLink]="['/loginpage']">Register</button> -->
-  <!-- c29134c687msh71e37f2a20d1817p1a522djsn98bf789616e6 -->
+<!-- c29134c687msh71e37f2a20d1817p1a522djsn98bf789616e6 -->

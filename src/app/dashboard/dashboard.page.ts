@@ -46,7 +46,6 @@ export class DashboardPage implements OnInit, AfterViewInit {
   totalGuest = 0;
   totalVisitors$ = new BehaviorSubject<number>(0);
   eventname: string;
-  //filterTerm: string;
   filterTerm = new FormControl('', []);
   scanActive: boolean;
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
@@ -104,14 +103,7 @@ export class DashboardPage implements OnInit, AfterViewInit {
       document.getElementsByTagName('body')[0].style.opacity = '1';
       this.scanSub.unsubscribe();
     });
-    this.route.queryParams.subscribe((params) => {
-      if (this.router.getCurrentNavigation().extras.state) {
-        this.userInfo =
-          this.router.getCurrentNavigation().extras.state.data_from_user;
-        localStorage.setItem(this.eventIDs, this.userInfo);
-        console.log(JSON.stringify(this.userInfo), 'Event Id');
-      }
-    });
+    this.userInfo = Number(localStorage.getItem(this.eventIDs));
     this.registerIcons(iconRegistry, sanitizer);
   }
   ngAfterViewInit(): void {

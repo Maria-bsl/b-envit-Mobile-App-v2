@@ -1,4 +1,4 @@
-<ion-header>
+<!-- <ion-header>
   <ion-toolbar>
     <ion-title>Add Invitee</ion-title>
     <ion-buttons  slot="start">
@@ -30,4 +30,107 @@
      <input matInput  type="text" placeholder="Email" [(ngModel)]="PostData.email_address" name="email_address" autocomplete="off"  >
   </mat-form-field>
   <ion-button expand="block" (click)="saveData()">Submit</ion-button>
+</ion-content> -->
+
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Add Invitee</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="backBtn()">
+        <ion-icon
+          name="arrow-back"
+          style="font-size: 1.2rem"
+          color="light"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <div class="d-flex flex-column">
+    <div class="d-flex flex-column w-100">
+      <div class="small fw-bold">Invitee Name</div>
+      <mat-form-field appearance="outline" class="w-100">
+        <input
+          matInput
+          type="text"
+          placeholder="Enter invitee name"
+          [formControl]="visitor_name"
+          autocomplete="off"
+          required
+        />
+        <mat-error>
+          <ng-container *ngIf="visitor_name.hasError('required');">
+            Please, enter invitee name.
+          </ng-container>
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="d-flex flex-column w-100">
+      <div class="small fw-bold">Mobile Number</div>
+      <mat-form-field appearance="outline" class="w-100">
+        <input
+          matInput
+          type="tel"
+          placeholder="Enter mobile number"
+          [formControl]="mobile_no"
+          autocomplete="off"
+          required
+        />
+        <mat-error>
+          <ng-container *ngIf="mobile_no.hasError('required');">
+            Please, enter mobile number.
+          </ng-container>
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="d-flex flex-column w-100">
+      <div class="small fw-bold">Card size</div>
+      <mat-form-field appearance="outline" class="w-100">
+        <input
+          matInput
+          type="text"
+          placeholder="Enter card size"
+          [formControl]="no_of_persons"
+          autocomplete="off"
+          required
+        />
+        <mat-error>
+          <ng-container *ngIf="no_of_persons.hasError('required');">
+            Please, enter card size.
+          </ng-container>
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="d-flex flex-column w-100">
+      <div class="small fw-bold">Table number</div>
+      <mat-form-field appearance="outline" class="w-100">
+        <input
+          matInput
+          type="text"
+          placeholder="Enter table number"
+          [formControl]="table_number"
+          autocomplete="off"
+        />
+      </mat-form-field>
+    </div>
+    <div class="d-flex flex-column w-100">
+      <div class="small fw-bold">Email address</div>
+      <mat-form-field appearance="outline" class="w-100">
+        <input
+          matInput
+          type="email"
+          placeholder="Enter email address"
+          [formControl]="email_address"
+          autocomplete="off"
+        />
+        <mat-error>
+          <ng-container *ngIf="email_address.hasError('email');">
+            Invalid email.
+          </ng-container>
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <ion-button expand="block" (click)="saveData()">Submit</ion-button>
+  </div>
 </ion-content>
