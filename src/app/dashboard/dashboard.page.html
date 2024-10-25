@@ -7,6 +7,7 @@
       </ion-button>
     </ion-buttons>
     <mat-menu #belowMenu="matMenu" yPosition="below">
+      <!-- <button mat-menu-item (click)="switchEvent()">Switch Event</button> -->
       <button mat-menu-item (click)="changepass()">Change Password</button>
       <button mat-menu-item (click)="logout()">Logout</button>
     </mat-menu>
@@ -35,12 +36,18 @@
     </ion-row>
     <ion-row>
       <ion-col size="6">
-        <highcharts-chart
-          #chartCol
-          [Highcharts]="Highcharts"
-          [options]="chartOptions"
-        >
-        </highcharts-chart>
+        <ng-container *ngIf="chartOptions">
+          <highcharts-chart
+            #chartCol
+            [Highcharts]="Highcharts"
+            [options]="chartOptions"
+            [constructorType]="chartConstructor"
+            [callbackFunction]="chartCallback"
+            [(update)]="updateFromInput"
+            [oneToOne]="true"
+          >
+          </highcharts-chart>
+        </ng-container>
       </ion-col>
       <ion-col size="6" class="d-flex flex-column">
         <div class="visitor-stats d-flex flex-column align-items-end mb-4">
@@ -49,7 +56,7 @@
         </div>
         <div class="visitor-stats d-flex flex-column align-items-end">
           <ion-text class="mb-2"> Visitors remaining </ion-text>
-          <ion-text color="danger"> {{totalGuest - guestIn}} </ion-text>
+          <ion-text color="danger"> {{remains}} </ion-text>
         </div>
       </ion-col>
     </ion-row>
@@ -70,35 +77,104 @@
   <div class="last">
     <ion-searchbar
       showCancelButton="focus"
-      [(ngModel)]="filterTerm"
+      [formControl]="filterTerm"
     ></ion-searchbar>
   </div>
-
-  <div style="overflow-x: auto">
-    <table class="table table-striped table table-striped">
-      <thead>
-        <tr *ngIf="listOfInvitee">
-          <th>Visitor Name</th>
-          <th>card scaned</th>
-          <th>Table No</th>
-          <th>Verified by</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          *ngFor="let invitee of listOfInvitee |filter:filterTerm | paginate: { itemsPerPage: 5, currentPage: cp }"
-          class="listMargin"
+  <div class="d-flex flex-column">
+    <div class="d-flex align-items-center my-2">
+      <ion-button
+        (click)="showingList = true"
+        [fill]="showingList ? '' : 'clear'"
+      >
+        <ion-icon slot="icon-only" name="list"></ion-icon>
+      </ion-button>
+      <ion-button
+        (click)="showingList = false"
+        [fill]="!showingList ? '' : 'clear'"
+      >
+        <ion-icon slot="icon-only" name="grid"></ion-icon>
+      </ion-button>
+    </div>
+    <ng-container *ngIf="showingList; else tableView">
+      <div id="list-view" class="d-flex flex-column">
+        <div
+          *ngFor="let invitee of dataSource.filteredData | slice
+        : 1 + paginator.pageSize * paginator.pageIndex - 1
+        : 1 +
+            paginator.pageSize * paginator.pageIndex +
+            paginator.pageSize -
+            1; index as ind;"
+          class="d-flex flex-column mb-2 rounded px-2 py-1 shadow-sm"
+          [class]="ind % 2 === 0 ? 'gray-color' : 'bg-white'"
         >
-          <td>{{invitee.visitor_name}}</td>
-          <td>{{invitee.scan_status}}</td>
-          <td>{{invitee.table_number}}</td>
-          <td>{{invitee.scanned_by}}</td>
-        </tr>
-      </tbody>
-    </table>
-    <pagination-controls
-      (pageChange)="cp = $event"
-      *ngIf="listOfInvitee"
-    ></pagination-controls>
+          <div
+            class="d-flex align-items-center justify-content-between border-b p-1"
+          >
+            <ion-text class="fw-bold">Visitor Name</ion-text>
+            <ion-text class="text-right">{{invitee.visitor_name}}</ion-text>
+          </div>
+          <div
+            class="d-flex align-items-center justify-content-between border-b p-1"
+          >
+            <ion-text class="fw-bold">Card Scanned</ion-text>
+            <ion-text
+              [ngClass]="getInviteeScanStatusColor(invitee.scan_status)"
+              class="text-right"
+            >
+              {{invitee.scan_status}}
+            </ion-text>
+          </div>
+          <div
+            class="d-flex align-items-center justify-content-between border-b p-1"
+          >
+            <ion-text class="fw-bold">Table No.</ion-text>
+            <ion-text class="text-right">{{invitee.table_number}}</ion-text>
+          </div>
+          <div
+            class="d-flex align-items-center justify-content-between border-b p-1"
+          >
+            <ion-text class="fw-bold">Verified by</ion-text>
+            <ion-text class="text-right">{{invitee.scanned_by}}</ion-text>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #tableView>
+      <table class="table table-striped table-striped">
+        <thead>
+          <tr *ngIf="listOfInvitee">
+            <th>Visitor Name</th>
+            <th>card scaned</th>
+            <th>Table No</th>
+            <th>Verified by</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let invitee of dataSource.filteredData | slice
+          : 1 + paginator.pageSize * paginator.pageIndex - 1
+          : 1 +
+              paginator.pageSize * paginator.pageIndex +
+              paginator.pageSize -
+              1; index as ind;"
+            class="listMargin"
+          >
+            <td>{{invitee.visitor_name}}</td>
+            <td [ngClass]="getInviteeScanStatusColor(invitee.scan_status)">
+              {{invitee.scan_status}}
+            </td>
+            <td>{{invitee.table_number}}</td>
+            <td>{{invitee.scanned_by}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </ng-template>
+    <mat-paginator
+      #paginator
+      [length]="dataSource.data.length"
+      [pageSize]="5"
+      aria-label="Select page"
+      [showFirstLastButtons]="true"
+    ></mat-paginator>
   </div>
 </ion-content>

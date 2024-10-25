@@ -39,7 +39,7 @@
   <ion-toolbar>
     <ion-title>B-Envit</ion-title>
     <ion-buttons [collapse]="true" slot="end">
-      <ion-button color="danger">
+      <ion-button (click)="logout()" color="danger">
         <ion-icon slot="start" name="exit-outline"></ion-icon>
         Log out
       </ion-button>

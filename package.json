@@ -119,8 +119,5 @@
       "android",
       "ios"
     ]
-  },
-  "config": {
-    "ionic_sass": "./sass.config.js"
   }
 }

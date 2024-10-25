@@ -68,6 +68,21 @@ ion-content {
     align-items: center;
     justify-content: center;
   }
+  .complete-scan-status {
+    color: #21532f;
+    background-color: #c1ffd1;
+    padding: 4px;
+    border-radius: 4px;
+  }
+  .pending-scan-status {
+    color: #514820;
+    background-color: #fff5bc;
+    padding: 4px;
+    border-radius: 4px;
+  }
+  .gray-color {
+    background-color: #f6f8fc;
+  }
   .event-detail-grid {
     border: 2px solid grey;
     border-radius: 5px;

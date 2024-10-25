@@ -1,7 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { MatLegacyListModule as MatListModule, MatLegacySelectionList as MatSelectionList } from '@angular/material/legacy-list';
+import {
+  MatLegacyListModule as MatListModule,
+  MatLegacySelectionList as MatSelectionList,
+} from '@angular/material/legacy-list';
 import { MatLegacyRadioModule as MatRadioModule } from '@angular/material/legacy-radio';
 import { Router, NavigationExtras } from '@angular/router';
 import { IonicModule, LoadingController } from '@ionic/angular';
@@ -93,5 +96,9 @@ export class SwitchEventComponent implements OnInit {
       .catch((err) => {
         throw err;
       });
+  }
+  logout() {
+    localStorage.clear();
+    this.router.navigate(['login']);
   }
 }

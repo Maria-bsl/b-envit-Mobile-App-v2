@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 // import { ServiceService } from '../service/service.service';
-import { MatLegacyDialog as MatDialog, MatLegacyDialogModule as MatDialogModule } from '@angular/material/legacy-dialog';
+import {
+  MatLegacyDialog as MatDialog,
+  MatLegacyDialogModule as MatDialogModule,
+} from '@angular/material/legacy-dialog';
 import { EventselectionPage } from '../eventselection/eventselection.page';
 import { IonicModule, LoadingController } from '@ionic/angular';
 import { from } from 'rxjs';
@@ -93,6 +96,10 @@ export class LoginPage implements OnInit {
       JSON.stringify({ mobile: res.Mobile_Number })
     );
     if (res.event_details && res.event_details.length > 0) {
+      localStorage.setItem(
+        'event_details_list',
+        JSON.stringify(res.event_details)
+      );
       this.router.navigateByUrl('switch', {
         state: { data: res.event_details },
       });
