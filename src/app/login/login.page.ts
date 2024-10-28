@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 // import { ServiceService } from '../service/service.service';
 import {
@@ -7,7 +7,7 @@ import {
 } from '@angular/material/legacy-dialog';
 import { EventselectionPage } from '../eventselection/eventselection.page';
 import { IonicModule, LoadingController } from '@ionic/angular';
-import { from } from 'rxjs';
+import { from, Subscription } from 'rxjs';
 import { ServiceService } from '../services/service.service';
 import Swal from 'sweetalert2';
 
@@ -57,8 +57,9 @@ import { DomSanitizer } from '@angular/platform-browser';
     MatIconModule,
   ],
 })
-export class LoginPage implements OnInit {
+export class LoginPage implements OnInit, OnDestroy {
   loginForm!: FormGroup;
+  subscriptions: Subscription[] = [];
   constructor(
     private fb: FormBuilder,
     private loadingCtrl: LoadingController,
@@ -102,6 +103,7 @@ export class LoginPage implements OnInit {
       );
       this.router.navigateByUrl('switch', {
         state: { data: res.event_details },
+        replaceUrl: true,
       });
       //this.openDialog(res.event_details);
     } else {
@@ -113,22 +115,25 @@ export class LoginPage implements OnInit {
     if (this.loginForm.valid) {
       let form = this.loginForm.value as LoginPayload;
       AppUtilities.startLoading(this.loadingCtrl)
-        .then((c) => {
-          this.service
-            .loginFunc(form)
-            .pipe(finalize(() => c.dismiss()))
-            .subscribe({
-              next: (res: LoginResponse) => {
-                this.parseLoginResponse(res);
-              },
-              error: (err: HttpErrorResponse) => {
-                AppUtilities.showErrorMessage(
-                  'Login failed',
-                  err.error.message
-                );
-                this.router.navigate(['login']);
-              },
-            });
+        .then((loading) => {
+          this.subscriptions.push(
+            this.service
+              .loginFunc(form)
+              .pipe(finalize(() => loading.dismiss()))
+              .subscribe({
+                next: (res: LoginResponse) => {
+                  this.parseLoginResponse(res);
+                },
+                error: (err: HttpErrorResponse) => {
+                  loading.dismiss();
+                  AppUtilities.showErrorMessage(
+                    'Login failed',
+                    err.error.message
+                  );
+                  this.router.navigate(['login']);
+                },
+              })
+          );
         })
         .catch((err) => {
           throw err;
@@ -152,6 +157,9 @@ export class LoginPage implements OnInit {
   }
   ngOnInit() {
     localStorage.clear();
+  }
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
   get mobile_number() {
     return this.loginForm.get('mobile_number') as FormControl;

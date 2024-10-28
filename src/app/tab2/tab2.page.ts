@@ -113,10 +113,10 @@
 
 // }
 
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
-import { from } from 'rxjs';
+import { from, Subscription } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { ServiceService } from '../services/service.service';
@@ -132,7 +132,8 @@ import { AppUtilities } from '../core/utils/app-utilities';
   styleUrls: ['tab2.page.scss'],
   animations: [inOutAnimation],
 })
-export class Tab2Page implements OnInit {
+export class Tab2Page implements OnInit, OnDestroy {
+  subscriptions: Subscription[] = [];
   showingList: boolean = true;
   userInfo: any;
   listOfInvitee: any;
@@ -176,16 +177,18 @@ export class Tab2Page implements OnInit {
     this.dataSource.filterPredicate = filterPredicate;
   }
   private searchInputChanged() {
-    this.searchInput.valueChanges.subscribe({
-      next: (searchText) => {
-        this.dataSource.filter = searchText.trim().toLocaleLowerCase();
-        if (this.paginator) {
-          this.paginator.firstPage();
-        }
-      },
-    });
+    this.subscriptions.push(
+      this.searchInput.valueChanges.subscribe({
+        next: (searchText) => {
+          this.dataSource.filter = searchText.trim().toLocaleLowerCase();
+          if (this.paginator) {
+            this.paginator.firstPage();
+          }
+        },
+      })
+    );
   }
-  async ngOnInit() {
+  ngOnInit() {
     this.requestInviteesList();
     this.searchInputChanged();
   }
@@ -194,63 +197,62 @@ export class Tab2Page implements OnInit {
     this.event_id = localStorage.getItem(this.eventIDs);
     const body = { event_id: this.event_id };
     AppUtilities.startLoading(this.loadingCtrl).then((loading) => {
-      this.service
-        .getAllinvitee(body.event_id)
-        .pipe(finalize(() => loading.dismiss()))
-        .subscribe({
-          next: (res) => {
-            this.inviteeArr = res;
-            this.listOfInvitee = this.inviteeArr.visitors;
-            this.dataSource = new MatTableDataSource(this.listOfInvitee);
-            this.tableLoading = false;
-            this.dataSourceFilter();
-          },
-        });
+      this.subscriptions.push(
+        this.service
+          .getAllinvitee(body.event_id)
+          .pipe(finalize(() => loading.dismiss()))
+          .subscribe({
+            next: (res) => {
+              this.inviteeArr = res;
+              this.listOfInvitee = this.inviteeArr.visitors;
+              this.dataSource = new MatTableDataSource(this.listOfInvitee);
+              this.tableLoading = false;
+              this.dataSourceFilter();
+            },
+          })
+      );
     });
   }
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((s) => s.unsubscribe());
+  }
   async sendQr(qrcode: any) {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     const body = { qr_code: qrcode, event_id: this.event_id };
-    console.log(JSON.stringify(body), 'qrcode entered');
-    const loading = await this.loadingCtrl.create({
-      message: 'please wait...',
-      spinner: 'lines-small',
-    });
-    await loading.present();
-    const native = this.service.sendQr(body);
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    from(native)
-      .pipe(finalize(() => loading.dismiss()))
-      .subscribe(
-        (res) => {
-          this.result = res;
-          this.qrResponse = this.result;
-          console.log(JSON.stringify(this.result), 'response');
-          if (this.result.message) {
-            // Swal.fire({
-            //   title: '',
-            //   text: this.result.message,
-            //   icon: 'error',
-            // });
-            AppUtilities.showErrorMessage('', this.result.message);
-          } else if (this.qrResponse) {
-            const navigationExtras: NavigationExtras = {
-              state: {
-                qrinfo: this.qrResponse,
-                qrcode: qrcode,
+    AppUtilities.startLoading(this.loadingCtrl)
+      .then((loading) => {
+        this.subscriptions.push(
+          this.service
+            .sendQr(body)
+            .pipe(finalize(() => loading.dismiss()))
+            .subscribe({
+              next: (res) => {
+                this.result = res;
+                this.qrResponse = this.result;
+                console.log(JSON.stringify(this.result), 'response');
+                if (this.result.message) {
+                  AppUtilities.showErrorMessage('', this.result.message);
+                } else if (this.qrResponse) {
+                  const navigationExtras: NavigationExtras = {
+                    state: {
+                      qrinfo: this.qrResponse,
+                      qrcode: qrcode,
+                    },
+                  };
+                  this.router.navigate(['tabs/verifyuser'], navigationExtras);
+                }
               },
-            };
-            this.router.navigate(['tabs/verifyuser'], navigationExtras);
-          }
-        },
-        (error) => {
-          this.errMsg = error;
-          this.resp = this.errMsg.error;
-          this.msg = this.resp.message;
-          AppUtilities.showErrorMessage('', this.msg);
-          console.log(JSON.stringify(error), 'erorr found');
-        }
-      );
+              error: (error) => {
+                this.errMsg = error;
+                this.resp = this.errMsg.error;
+                this.msg = this.resp.message;
+                AppUtilities.showErrorMessage('', this.msg);
+              },
+            })
+        );
+      })
+      .catch((err) => {
+        throw err;
+      });
   }
   async doRefresh(event) {
     //this.verifycardlist();

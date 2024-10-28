@@ -68,10 +68,10 @@
 //   }
 // }
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
-import { from } from 'rxjs';
+import { from, Subscription } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { ServiceService } from '../services/service.service';
 import Swal from 'sweetalert2';
@@ -89,10 +89,11 @@ import { Location } from '@angular/common';
   templateUrl: './registration.page.html',
   styleUrls: ['./registration.page.scss'],
 })
-export class RegistrationPage implements OnInit {
+export class RegistrationPage implements OnInit, OnDestroy {
   private readonly TOKEN_user = 'bizlogicj';
   private readonly eventIDs = 'event_id';
   private readonly TOKEN_Cstomer = 'cstID';
+  subscriptions: Subscription[] = [];
   formGroup!: FormGroup;
   posted_id: any;
   user: any;
@@ -106,7 +107,6 @@ export class RegistrationPage implements OnInit {
     private fb: FormBuilder,
     private location: Location
   ) {}
-
   ngOnInit() {
     this.user = localStorage.getItem(this.TOKEN_user);
     this.event_id = localStorage.getItem(this.eventIDs);
@@ -114,6 +114,9 @@ export class RegistrationPage implements OnInit {
 
     this.posted_id = JSON.parse(this.user);
     this.createFormGroup();
+  }
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
   private createFormGroup() {
     this.formGroup = this.fb.group({
@@ -144,16 +147,21 @@ export class RegistrationPage implements OnInit {
       posted_by: this.posted_id,
     };
     AppUtilities.startLoading(this.loadingCtrl).then((loading) => {
-      this.service
-        .CustomerRegistration(bodyparams)
-        .pipe(finalize(() => loading.dismiss()))
-        .subscribe({
-          next: (res) => {
-            this.response = res;
-            AppUtilities.showSuccessMessage('', this.response.response);
-            this.router.navigate(['tabs/tab2']);
-          },
-        });
+      this.subscriptions.push(
+        this.service
+          .CustomerRegistration(bodyparams)
+          .pipe(finalize(() => loading.dismiss()))
+          .subscribe({
+            next: (res) => {
+              this.response = res;
+              AppUtilities.showSuccessMessage('', this.response.response);
+              this.router.navigate(['tabs/tab2']);
+            },
+            error: (err) => {
+              throw err;
+            },
+          })
+      );
     });
   }
   backBtn() {

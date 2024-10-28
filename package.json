@@ -37,6 +37,7 @@
     "apexcharts": "^3.35.2",
     "bootstrap": "^5.1.3",
     "chart.js": "^3.7.1",
+    "Ecard": "file:",
     "filter-search": "^1.2.1",
     "highcharts": "^10.1.0",
     "highcharts-angular": "^3.0.0",

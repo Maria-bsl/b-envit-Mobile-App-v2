@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import {
   MatLegacyListModule as MatListModule,
@@ -8,7 +8,7 @@ import {
 import { MatLegacyRadioModule as MatRadioModule } from '@angular/material/legacy-radio';
 import { Router, NavigationExtras } from '@angular/router';
 import { IonicModule, LoadingController } from '@ionic/angular';
-import { finalize } from 'rxjs/operators';
+import { finalize, tap } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { EventDetailsResponse } from '../core/response/EventDetailsResponse';
 import { AppUtilities } from '../core/utils/app-utilities';
@@ -17,6 +17,7 @@ import { ServiceService } from '../services/service.service';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatLegacyButtonModule as MatButtonModule } from '@angular/material/legacy-button';
 import { NavbarComponent } from '../components/layouts/navbar/navbar.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-switch-event',
@@ -34,9 +35,10 @@ import { NavbarComponent } from '../components/layouts/navbar/navbar.component';
     NavbarComponent,
   ],
 })
-export class SwitchEventComponent implements OnInit {
+export class SwitchEventComponent implements OnInit, OnDestroy {
   selected: number = -1;
   eventsList: EventDetailsResponse[] = [];
+  subscriptions: Subscription[] = [];
   constructor(
     private router: Router,
     private controller: LoadingController,
@@ -53,6 +55,9 @@ export class SwitchEventComponent implements OnInit {
       }
     }
   }
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((s) => s.unsubscribe());
+  }
   eventChanged(index: any) {
     if (index < 0 || index > this.eventsList.length - 1)
       throw Error('Event index is out of range.');
@@ -63,17 +68,18 @@ export class SwitchEventComponent implements OnInit {
     );
   }
   openSelectedEvent(selected: EventDetailsResponse) {
-    // const navigationExtras: NavigationExtras = {
-    //   state: {
-    //     data_from_user: selected.event_id,
-    //   },
-    // };
+    const navigationExtras: NavigationExtras = {
+      state: {
+        data_from_user: selected.event_id,
+      },
+      replaceUrl: true,
+    };
     localStorage.setItem(
       'event_id',
       this.eventsList.at(this.selected).event_id.toString()
     );
-    //this.router.navigateByUrl('tabs/dashboard', navigationExtras);
-    this.router.navigate(['tabs/dashboard']);
+    this.router.navigateByUrl('tabs/dashboard', navigationExtras);
+    //this.router.navigate(['tabs/dashboard'], navigationExtras);
   }
   async openDashboard() {
     if (this.selected === -1) {
@@ -88,25 +94,30 @@ export class SwitchEventComponent implements OnInit {
     } as EventChoice;
     AppUtilities.startLoading(this.controller)
       .then((loading) => {
-        this.service
-          .EventChoices(params)
-          .pipe(finalize(() => loading.dismiss()))
-          .subscribe({
-            next: (result: any) => {
-              localStorage.setItem(
-                AppUtilities.TOKEN_user,
-                JSON.stringify(result.user_id)
-              );
-              localStorage.setItem(
-                AppUtilities.TOKEN_Cstomer,
-                JSON.stringify(result.customer_admin_id)
-              );
-              this.openSelectedEvent(selected);
-            },
-            error: (err) => {
-              throw err;
-            },
-          });
+        this.subscriptions.push(
+          this.service
+            .EventChoices(params)
+            .pipe(finalize(() => loading.dismiss()))
+            .subscribe({
+              next: (result: any) => {
+                localStorage.setItem(
+                  AppUtilities.TOKEN_user,
+                  JSON.stringify(result.user_id)
+                );
+                localStorage.setItem(
+                  AppUtilities.TOKEN_Cstomer,
+                  JSON.stringify(result.customer_admin_id)
+                );
+              },
+              error: (error) => {
+                loading.dismiss();
+                throw error;
+              },
+            })
+        );
+      })
+      .then(() => {
+        this.openSelectedEvent(selected);
       })
       .catch((err) => {
         throw err;

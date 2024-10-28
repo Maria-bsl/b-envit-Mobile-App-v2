@@ -163,10 +163,10 @@
 //   }
 // }
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import Swal from 'sweetalert2';
 import { LoadingController } from '@ionic/angular';
-import { from } from 'rxjs';
+import { from, Subscription } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { NavigationExtras, Router } from '@angular/router';
 import { ServiceService } from '../services/service.service';
@@ -178,7 +178,8 @@ import { AppUtilities } from '../core/utils/app-utilities';
   templateUrl: './verifycode.page.html',
   styleUrls: ['./verifycode.page.scss'],
 })
-export class VerifycodePage implements OnInit {
+export class VerifycodePage implements OnInit, OnDestroy {
+  subsriptions: Subscription[] = [];
   eventname: string;
   result: any;
   qrResponse: any;
@@ -206,46 +207,51 @@ export class VerifycodePage implements OnInit {
   postData = {
     qrcode: '',
   };
-  async ngOnInit() {
+  ngOnInit() {
     this.eventname = localStorage.getItem(this.event_name);
     this.event_id = localStorage.getItem(this.eventIDs);
   }
-  async sendQr() {
+  ngOnDestroy(): void {
+    this.subsriptions.forEach((s) => s.unsubscribe());
+  }
+  sendQr() {
     const body = { qr_code: this.postData.qrcode, event_id: this.event_id };
     console.log(JSON.stringify(body), 'qrcode entered');
     AppUtilities.startLoading(this.loadingCtrl).then((c) => {
       const native = this.service.sendQr(body);
-      native.pipe(finalize(() => c.dismiss())).subscribe({
-        next: (res) => {
-          this.result = res;
-          this.qrResponse = this.result;
-          if (this.result.message) {
-            AppUtilities.showErrorMessage('', this.result.message);
-          } else if (this.qrResponse) {
-            const navigationExtras: NavigationExtras = {
-              state: {
-                qrinfo: this.qrResponse,
-                qrcode: this.postData.qrcode,
-              },
-            };
-            if (this.qrResponse.unchecked_invitee == 1) {
-              this.verify();
-            } else {
-              this.router.navigate(['tabs/verifyuser'], navigationExtras);
+      this.subsriptions.push(
+        native.pipe(finalize(() => c.dismiss())).subscribe({
+          next: (res) => {
+            this.result = res;
+            this.qrResponse = this.result;
+            if (this.result.message) {
+              AppUtilities.showErrorMessage('', this.result.message);
+            } else if (this.qrResponse) {
+              const navigationExtras: NavigationExtras = {
+                state: {
+                  qrinfo: this.qrResponse,
+                  qrcode: this.postData.qrcode,
+                },
+              };
+              if (this.qrResponse.unchecked_invitee == 1) {
+                this.verify();
+              } else {
+                this.router.navigate(['tabs/verifyuser'], navigationExtras);
+              }
             }
-          }
-        },
-        error: (err) => {
-          this.errMsg = err;
-          this.resp = this.errMsg.error;
-          this.msg = this.resp.message;
-          AppUtilities.showErrorMessage('', this.msg);
-        },
-      });
+          },
+          error: (err) => {
+            this.errMsg = err;
+            this.resp = this.errMsg.error;
+            this.msg = this.resp.message;
+            AppUtilities.showErrorMessage('', this.msg);
+          },
+        })
+      );
     });
   }
 
-  async verify() {
+  verify() {
     this.userId = localStorage.getItem(this.TOKEN_user);
     this.visitor_id = this.qrResponse.visitor_id;
     const qrcode = this.qrcode;
@@ -257,31 +263,36 @@ export class VerifycodePage implements OnInit {
       User_Id: this.userId,
     };
     AppUtilities.startLoading(this.loadingCtrl).then((loading) => {
-      this.service
-        .verifyQr(params)
-        .pipe(finalize(() => loading.dismiss()))
-        .subscribe({
-          next: (res) => {
-            this.verifyresponse = res;
-            if (this.verifyresponse.status == 1) {
-              AppUtilities.showSuccessMessage('', this.verifyresponse.message);
-              this.router.navigate(['tabs/dashboard']);
-              this.input = '';
-              ``;
-            } else {
-              AppUtilities.showErrorMessage('', this.verifyresponse.message);
-              this.input = '';
-            }
-          },
-          error: (error) => {
-            this.errMsg = error;
-            this.resp = this.errMsg.error;
-            this.msg = this.resp.message;
+      this.subsriptions.push(
+        this.service
+          .verifyQr(params)
+          .pipe(finalize(() => loading.dismiss()))
+          .subscribe({
+            next: (res) => {
+              this.verifyresponse = res;
+              if (this.verifyresponse.status == 1) {
+                AppUtilities.showSuccessMessage(
+                  '',
+                  this.verifyresponse.message
+                );
+                this.router.navigate(['tabs/dashboard']);
+                this.input = '';
+                ``;
+              } else {
+                AppUtilities.showErrorMessage('', this.verifyresponse.message);
+                this.input = '';
+              }
+            },
+            error: (error) => {
+              this.errMsg = error;
+              this.resp = this.errMsg.error;
+              this.msg = this.resp.message;
 
-            AppUtilities.showErrorMessage('', this.msg);
-            this.router.navigate(['tabs/dashboard']);
-          },
-        });
+              AppUtilities.showErrorMessage('', this.msg);
+              this.router.navigate(['tabs/dashboard']);
+            },
+          })
+      );
     });
   }
   changepass() {

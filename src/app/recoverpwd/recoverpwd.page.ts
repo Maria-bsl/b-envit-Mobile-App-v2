@@ -63,10 +63,10 @@
 //   }
 // }
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
-import { from } from 'rxjs';
+import { from, Subscription } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { ServiceService } from '../services/service.service';
@@ -83,7 +83,8 @@ import {
   templateUrl: './recoverpwd.page.html',
   styleUrls: ['./recoverpwd.page.scss'],
 })
-export class RecoverpwdPage implements OnInit {
+export class RecoverpwdPage implements OnInit, OnDestroy {
+  subscriptions: Subscription[] = [];
   response: any;
   PostData!: FormGroup;
   constructor(
@@ -100,37 +101,39 @@ export class RecoverpwdPage implements OnInit {
       ]),
     });
   }
-  // PostData = {
-  //   mobile_number: '',
-  // };
   ngOnInit() {
     this.createPostDataFormGroup();
   }
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((s) => s.unsubscribe());
+  }
   private async forgetpwd(mobileNumber: string) {
-    const loading = await this.loadingCtrl.create({
-      spinner: 'bubbles',
+    AppUtilities.startLoading(this.loadingCtrl).then((loading) => {
+      this.subscriptions.push(
+        this.service
+          .Forgetpwd(mobileNumber)
+          .pipe(finalize(() => loading.dismiss()))
+          .subscribe({
+            next: (res: { status: number }) => {
+              if (res.status == 1) {
+                AppUtilities.showSuccessMessage(
+                  '',
+                  'Credentials have been sent to your mobile number.'
+                );
+                this.router.navigate(['login']);
+              } else {
+                AppUtilities.showErrorMessage('', 'Invalid mobile number');
+              }
+            },
+            error: (err) => {
+              AppUtilities.showErrorMessage(
+                '',
+                'An error occurred. Please try again.'
+              );
+            },
+          })
+      );
     });
-    await loading.present();
-    let native = this.service.Forgetpwd(mobileNumber);
-    from(native)
-      .pipe(finalize(() => loading.dismiss()))
-      .subscribe((res: { status: number }) => {
-        if (res.status == 1) {
-          AppUtilities.showSuccessMessage(
-            '',
-            'Credentials have been sent to your mobile number.'
-          );
-          this.router.navigate(['login']);
-        } else {
-          AppUtilities.showErrorMessage('', 'Invalid mobile number');
-        }
-      }),
-      (error) => {
-        AppUtilities.showErrorMessage(
-          '',
-          'An error occurred. Please try again.'
-        );
-      };
   }
   loginpage() {
     this.router.navigate(['login']);

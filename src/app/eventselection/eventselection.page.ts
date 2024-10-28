@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
 import { MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA } from '@angular/material/legacy-dialog';
 import { ServiceService } from '../services/service.service';
 import { LoadingController } from '@ionic/angular';
 import { finalize } from 'rxjs/operators';
-import { from } from 'rxjs';
+import { from, Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 import { AppUtilities } from '../core/utils/app-utilities';
 
@@ -18,12 +18,13 @@ export interface userData {
   templateUrl: './eventselection.page.html',
   styleUrls: ['./eventselection.page.scss'],
 })
-export class EventselectionPage implements OnInit {
+export class EventselectionPage implements OnInit, OnDestroy {
   Events: any;
   datas: any;
   mobileNumber: any;
   eventname: any;
   mob: any;
+  suscriptions: Subscription[] = [];
 
   private readonly TOKEN_NAME = 'profanis_auth';
   private readonly TOKEN_user = 'bizlogicj';
@@ -54,6 +55,9 @@ export class EventselectionPage implements OnInit {
     this.mob = JSON.parse(this.datas);
     this.mobileNumber = this.mob.mobile;
   }
+  ngOnDestroy(): void {
+    this.suscriptions.forEach((s) => s.unsubscribe());
+  }
   async loginEvent() {
     const params = {
       mobile_number: this.mobileNumber,
@@ -65,10 +69,8 @@ export class EventselectionPage implements OnInit {
     });
     await loading.present();
     const native = this.service.EventChoices(params);
-
     from(native)
       .pipe(finalize(() => loading.dismiss()))
-
       .subscribe((arg) => {
         this.property = arg;
         localStorage.setItem(

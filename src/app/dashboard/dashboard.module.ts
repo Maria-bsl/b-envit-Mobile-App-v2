@@ -20,34 +20,8 @@ import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { NavbarComponent } from '../components/layouts/navbar/navbar.component';
 
 @NgModule({
-  imports: [
-    NavbarComponent,
-    CommonModule,
-    IonicModule,
-    MatFormFieldModule,
-    MatSortModule,
-    MatInputModule,
-    MatSliderModule,
-    MatIconModule,
-    MatStepperModule,
-    MatTableModule,
-    MatMenuModule,
-    MatPaginatorModule,
-    ReactiveFormsModule,
-    Ng2SearchPipeModule,
-    HighchartsChartModule,
-    NgCircleProgressModule.forRoot({
-      // set defaults here
-      radius: 30,
-      outerStrokeWidth: 10,
-      innerStrokeWidth: 8,
-      outerStrokeColor: '#405980',
-      innerStrokeColor: '#95a57c',
-      animationDuration: 2000,
-    }),
-    DashboardPageRoutingModule,
-  ],
-  declarations: [DashboardPage],
+  imports: [DashboardPageRoutingModule],
+  //declarations: [DashboardPage],
   providers: [
     {
       provide: STEPPER_GLOBAL_OPTIONS,

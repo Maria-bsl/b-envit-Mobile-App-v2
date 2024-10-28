@@ -4,12 +4,13 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
+  OnDestroy,
   OnInit,
   ViewChild,
 } from '@angular/core';
 import { ActivatedRoute, Router, NavigationExtras } from '@angular/router';
 import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner/ngx';
-import { LoadingController, Platform } from '@ionic/angular';
+import { IonicModule, LoadingController, Platform } from '@ionic/angular';
 import { BehaviorSubject, from, Subscription, zip } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 // import { QrresultPage, userData } from '../qrresult/qrresult.page';
@@ -17,21 +18,49 @@ import { ServiceService } from '../services/service.service';
 import { Chart } from 'chart.js';
 import * as Highcharts from 'highcharts';
 import { AppUtilities } from '../core/utils/app-utilities';
-import { MatTableDataSource } from '@angular/material/table';
-import { FormControl } from '@angular/forms';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatIconRegistry } from '@angular/material/icon';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
-import { MatSort } from '@angular/material/sort';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import { inOutAnimation } from '../core/shared/fade-in-out-animation';
+import { CommonModule } from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatSliderModule } from '@angular/material/slider';
+import { MatStepperModule } from '@angular/material/stepper';
+import { HighchartsChartModule } from 'highcharts-angular';
+import { Ng2SearchPipeModule } from 'ng2-search-filter';
+import { NavbarComponent } from '../components/layouts/navbar/navbar.component';
+import { NgCircleProgressModule } from 'ng-circle-progress';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.scss'],
   animations: [inOutAnimation],
+  standalone: true,
+  imports: [
+    NavbarComponent,
+    CommonModule,
+    IonicModule,
+    MatFormFieldModule,
+    MatSortModule,
+    MatInputModule,
+    MatSliderModule,
+    MatIconModule,
+    MatStepperModule,
+    MatTableModule,
+    MatMenuModule,
+    MatPaginatorModule,
+    ReactiveFormsModule,
+    Ng2SearchPipeModule,
+    HighchartsChartModule,
+  ],
 })
-export class DashboardPage implements OnInit, AfterViewInit {
+export class DashboardPage implements OnInit, AfterViewInit, OnDestroy {
   showingList: boolean = true;
   displayedColumns: string[] = [
     'Visitor Name',
@@ -88,7 +117,8 @@ export class DashboardPage implements OnInit, AfterViewInit {
     },
     series: [],
   };
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  //@ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild('paginator') paginator!: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   constructor(
     private loadingCtrl: LoadingController,
@@ -109,29 +139,39 @@ export class DashboardPage implements OnInit, AfterViewInit {
     this.registerIcons(iconRegistry, sanitizer);
   }
   ngAfterViewInit(): void {
-    // this.dataSource.paginator = this.paginator;
+    this.dataSource.paginator = this.paginator;
     // this.dataSource.sort = this.sort;
   }
   ngOnInit() {
     this.eventname = localStorage.getItem(this.event_name);
     this.verifycardlist();
-    this.service.refreshNeeded$.subscribe(() => {
-      this.verifycardlist();
-    });
-
+    this.subscriptions.push(
+      this.service.refreshNeeded$.subscribe({
+        next: (res) => {
+          this.verifycardlist();
+        },
+        error: (err) => {
+          throw err;
+        },
+      })
+    );
     const self = this;
     this.chartCallback = (chart) => {
       self.chart = chart;
     };
-
-    this.filterTerm.valueChanges.subscribe({
-      next: (searchText) => {
-        this.dataSource.filter = searchText.trim().toLocaleLowerCase();
-        if (this.paginator) {
-          this.paginator.firstPage();
-        }
-      },
-    });
+    this.subscriptions.push(
+      this.filterTerm.valueChanges.subscribe({
+        next: (searchText) => {
+          this.dataSource.filter = searchText.trim().toLocaleLowerCase();
+          if (this.paginator) {
+            this.paginator.firstPage();
+          }
+        },
+      })
+    );
+  }
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
   private registerIcons(
     iconRegistry: MatIconRegistry,
@@ -209,55 +249,24 @@ export class DashboardPage implements OnInit, AfterViewInit {
       let inviteeChecked$ = from(this.service.inviteeChecked(this.userInfo));
       let getAllinvitee$ = from(this.service.getAllinvitee(this.userInfo));
       let observables = zip(inviteeChecked$, getAllinvitee$);
-      observables.pipe(finalize(() => loading.dismiss())).subscribe({
-        next: (res) => {
-          let [inviteeChecked, getAllinvitee] = res;
-          this.parseInviteeChecked(inviteeChecked);
-          this.parseGetAllInvitees(getAllinvitee);
-          this.remains = this.totalGuest - this.guestIn;
-          this.percen = (this.guestIn / this.totalGuest) * 100;
-          this.percen2 = (this.remains / this.totalGuest) * 100;
-          this.updateChartOptions();
-        },
-        error: (err) => {},
-      });
+      this.subscriptions.push(
+        observables.pipe(finalize(() => loading.dismiss())).subscribe({
+          next: (res) => {
+            let [inviteeChecked, getAllinvitee] = res;
+            this.parseInviteeChecked(inviteeChecked);
+            this.parseGetAllInvitees(getAllinvitee);
+            this.remains = this.totalGuest - this.guestIn;
+            this.percen = (this.guestIn / this.totalGuest) * 100;
+            this.percen2 = (this.remains / this.totalGuest) * 100;
+            this.updateChartOptions();
+          },
+          error: (err) => {
+            throw err;
+          },
+        })
+      );
     });
   }
-  // startScanning() {
-  //   // Optionally request the permission early
-  //   this.qrScanner.prepare().then((status: QRScannerStatus) => {
-  //     if (status.authorized) {
-  //       this.qrScanner.show();
-  //       this.scanSub = document.getElementsByTagName('body')[0].style.opacity =
-  //         '0';
-  //       // debugger
-
-  //       this.scanSub = this.qrScanner
-  //         .scan()
-
-  //         .subscribe(
-  //           (textFound: string) => {
-  //             document.getElementsByTagName('body')[0].style.opacity = '1';
-
-  //             this.qrScanner.hide();
-  //             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  //             this.qrScanner.destroy();
-  //             // this.qrScanner.unsubscribe();
-  //             this.qrText = textFound;
-  //             // this.openModal(this.qrText);
-  //             this.sendResult(this.qrText);
-  //           },
-  //           (err) => {
-  //             alert(JSON.stringify(err));
-  //           }
-  //         );
-  //       // this.scanActive =true;
-  //     } else if (status.denied) {
-  //       this.qrScanner.hide();
-  //     } else {
-  //     }
-  //   });
-  // }
   startScanning() {
     let body = document.getElementsByTagName('body')[0];
     //Optionally request the permission early
@@ -269,18 +278,20 @@ export class DashboardPage implements OnInit, AfterViewInit {
         } else if (status.authorized) {
           this.qrScanner.show();
           body.style.opacity = '0';
-          this.scanSub = this.qrScanner.scan().subscribe({
-            next: (textFound) => {
-              body.style.opacity = '1';
-              this.qrScanner.hide();
-              this.qrScanner.destroy();
-              if (this.scanSub) {
-                this.scanSub.unsubscribe();
-              }
-              this.qrText = textFound;
-              this.sendResult(this.qrText);
-            },
-          });
+          this.subscriptions.push(
+            (this.scanSub = this.qrScanner.scan().subscribe({
+              next: (textFound) => {
+                body.style.opacity = '1';
+                this.qrScanner.hide();
+                this.qrScanner.destroy();
+                if (this.scanSub) {
+                  this.scanSub.unsubscribe();
+                }
+                this.qrText = textFound;
+                this.sendResult(this.qrText);
+              },
+            }))
+          );
         }
       })
       .catch((err) => {

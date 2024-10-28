@@ -16,6 +16,9 @@ export class NavbarComponent implements OnInit {
   changepass() {
     this.router.navigate(['changepwd']);
   }
+  switchEvent() {
+    this.router.navigate(['switch']);
+  }
   logout() {
     localStorage.clear();
     this.router.navigate(['login']);
