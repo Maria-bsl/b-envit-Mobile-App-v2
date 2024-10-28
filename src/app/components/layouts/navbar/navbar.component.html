@@ -1,0 +1,15 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title class="text-uppercase text-white fw-bold">B-Envit</ion-title>
+    <ion-buttons [matMenuTriggerFor]="belowMenu" [collapse]="true" slot="end">
+      <ion-button color="light">
+        <ion-icon slot="icon-only" name="person-circle"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <mat-menu #belowMenu="matMenu" yPosition="below">
+      <!-- <button mat-menu-item (click)="switchEvent()">Switch Event</button> -->
+      <button mat-menu-item (click)="changepass()">Change Password</button>
+      <button mat-menu-item (click)="logout()">Logout</button>
+    </mat-menu>
+  </ion-toolbar>
+</ion-header>

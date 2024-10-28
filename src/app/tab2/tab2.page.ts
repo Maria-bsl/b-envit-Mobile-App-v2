@@ -123,13 +123,17 @@ import { ServiceService } from '../services/service.service';
 import { FormControl } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
+import { inOutAnimation } from '../core/shared/fade-in-out-animation';
+import { AppUtilities } from '../core/utils/app-utilities';
 
 @Component({
   selector: 'app-tab2',
   templateUrl: 'tab2.page.html',
   styleUrls: ['tab2.page.scss'],
+  animations: [inOutAnimation],
 })
 export class Tab2Page implements OnInit {
+  showingList: boolean = true;
   userInfo: any;
   listOfInvitee: any;
   guestIn: any;
@@ -162,9 +166,12 @@ export class Tab2Page implements OnInit {
   ) {}
   private dataSourceFilter() {
     let filterPredicate = (data: any, filter: string) => {
-      return data.visitor_name
-        .toLocaleLowerCase()
-        .includes(filter.toLocaleLowerCase());
+      return (
+        data.visitor_name
+          .toLocaleLowerCase()
+          .includes(filter.toLocaleLowerCase()) ||
+        data.mobile_no.toLocaleLowerCase().includes(filter.toLocaleLowerCase())
+      );
     };
     this.dataSource.filterPredicate = filterPredicate;
   }
@@ -179,29 +186,27 @@ export class Tab2Page implements OnInit {
     });
   }
   async ngOnInit() {
-    this.eventname = localStorage.getItem(this.event_name);
-
-    this.event_id = localStorage.getItem(this.eventIDs);
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    const body = { event_id: this.event_id };
-    const loading = await this.loadingCtrl.create({
-      message: '',
-      spinner: 'lines-small',
-    });
-    this.tableLoading = true;
-    loading.present();
-    const native = this.service.getAllinvitee(body.event_id);
-    from(native)
-      .pipe(finalize(() => loading.dismiss()))
-      .subscribe((res) => {
-        this.inviteeArr = res;
-        this.listOfInvitee = this.inviteeArr.visitors;
-        this.dataSource = new MatTableDataSource(this.listOfInvitee);
-        this.tableLoading = false;
-        this.dataSourceFilter();
-        // this.guestIn = this.inviteeArr.invitees_count;
-      });
+    this.requestInviteesList();
     this.searchInputChanged();
+  }
+  requestInviteesList() {
+    this.eventname = localStorage.getItem(this.event_name);
+    this.event_id = localStorage.getItem(this.eventIDs);
+    const body = { event_id: this.event_id };
+    AppUtilities.startLoading(this.loadingCtrl).then((loading) => {
+      this.service
+        .getAllinvitee(body.event_id)
+        .pipe(finalize(() => loading.dismiss()))
+        .subscribe({
+          next: (res) => {
+            this.inviteeArr = res;
+            this.listOfInvitee = this.inviteeArr.visitors;
+            this.dataSource = new MatTableDataSource(this.listOfInvitee);
+            this.tableLoading = false;
+            this.dataSourceFilter();
+          },
+        });
+    });
   }
   async sendQr(qrcode: any) {
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -222,11 +227,12 @@ export class Tab2Page implements OnInit {
           this.qrResponse = this.result;
           console.log(JSON.stringify(this.result), 'response');
           if (this.result.message) {
-            Swal.fire({
-              title: '',
-              text: this.result.message,
-              icon: 'error',
-            });
+            // Swal.fire({
+            //   title: '',
+            //   text: this.result.message,
+            //   icon: 'error',
+            // });
+            AppUtilities.showErrorMessage('', this.result.message);
           } else if (this.qrResponse) {
             const navigationExtras: NavigationExtras = {
               state: {
@@ -241,15 +247,17 @@ export class Tab2Page implements OnInit {
           this.errMsg = error;
           this.resp = this.errMsg.error;
           this.msg = this.resp.message;
-
-          Swal.fire({
-            title: '',
-            text: this.msg,
-            icon: 'error',
-          });
+          AppUtilities.showErrorMessage('', this.msg);
           console.log(JSON.stringify(error), 'erorr found');
         }
       );
+  }
+  async doRefresh(event) {
+    //this.verifycardlist();
+    this.requestInviteesList();
+    setTimeout(() => {
+      event.target.complete();
+    }, 1000);
   }
   addInvitees() {
     this.router.navigate(['registration']);

@@ -8,9 +8,11 @@ import { VerifyuserPageRoutingModule } from './verifyuser-routing.module';
 
 import { VerifyuserPage } from './verifyuser.page';
 import { MatLegacySelectModule as MatSelectModule } from '@angular/material/legacy-select';
+import { NavbarComponent } from '../components/layouts/navbar/navbar.component';
 
 @NgModule({
   imports: [
+    NavbarComponent,
     CommonModule,
     FormsModule,
     IonicModule,

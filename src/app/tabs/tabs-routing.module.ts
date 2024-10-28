@@ -8,41 +8,43 @@ const routes: Routes = [
     component: TabsPage,
     children: [
       {
-        path: 'tab1',
-        loadChildren: () => import('../tab1/tab1.module').then(m => m.Tab1PageModule)
-      },
-      {
         path: 'tab2',
-        loadChildren: () => import('../tab2/tab2.module').then(m => m.Tab2PageModule)
-      },
-      {
-        path: 'tab3',
-        loadChildren: () => import('../tab3/tab3.module').then(m => m.Tab3PageModule)
+        loadChildren: () =>
+          import('../tab2/tab2.module').then((m) => m.Tab2PageModule),
       },
       {
         path: 'dashboard',
-        loadChildren: () => import('../dashboard/dashboard.module').then(m => m.DashboardPageModule)
+        loadChildren: () =>
+          import('../dashboard/dashboard.module').then(
+            (m) => m.DashboardPageModule
+          ),
       },
       {
         path: 'verifycode',
-        loadChildren: () => import('../verifycode/verifycode.module').then(m => m.VerifycodePageModule)
+        loadChildren: () =>
+          import('../verifycode/verifycode.module').then(
+            (m) => m.VerifycodePageModule
+          ),
       },
       {
         path: 'verifyuser',
-        loadChildren: () => import('../verifyuser/verifyuser.module').then(m => m.VerifyuserPageModule)
+        loadChildren: () =>
+          import('../verifyuser/verifyuser.module').then(
+            (m) => m.VerifyuserPageModule
+          ),
       },
       {
         path: '',
         redirectTo: '/tabs/tab1',
-        pathMatch: 'full'
-      }
-    ]
+        pathMatch: 'full',
+      },
+    ],
   },
   {
     path: '',
     redirectTo: '/tabs/tab1',
-    pathMatch: 'full'
-  }
+    pathMatch: 'full',
+  },
 ];
 
 @NgModule({

@@ -85,6 +85,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { AppUtilities } from '../core/utils/app-utilities';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-changepwd',
@@ -103,7 +104,8 @@ export class ChangepwdPage implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private service: ServiceService,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private location: Location
   ) {}
   // postData = {
   //   current_password: '',
@@ -120,17 +122,6 @@ export class ChangepwdPage implements OnInit {
     }, {} as { [key: string]: any });
     return payload;
   }
-  // postData = this.fb.group({
-  //   current_password: this.fb.control('', [Validators.required]),
-  //   Create_Password: this.fb.control('', [
-  //     Validators.required,
-  //     AppUtilities.matchValidator('New_Password', true),
-  //   ]),
-  //   New_Password: this.fb.control('', [
-  //     Validators.required,
-  //     AppUtilities.matchValidator('Create_Password'),
-  //   ]),
-  // });
   postData!: FormGroup;
   ngOnInit() {
     this.datas = localStorage.getItem(this.TOKEN_NAME);
@@ -209,7 +200,8 @@ export class ChangepwdPage implements OnInit {
     });
   }
   backBtn() {
-    this.router.navigate(['..']);
+    //this.router.navigate(['..']);
+    this.location.back();
   }
   get current_password() {
     return this.postData.get('current_password') as FormControl;

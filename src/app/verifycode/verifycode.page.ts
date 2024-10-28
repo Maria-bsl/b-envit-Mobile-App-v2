@@ -209,8 +209,6 @@ export class VerifycodePage implements OnInit {
   async ngOnInit() {
     this.eventname = localStorage.getItem(this.event_name);
     this.event_id = localStorage.getItem(this.eventIDs);
-
-    // eslint-disable-next-line @typescript-eslint/naming-convention
   }
   async sendQr() {
     const body = { qr_code: this.postData.qrcode, event_id: this.event_id };
@@ -222,12 +220,7 @@ export class VerifycodePage implements OnInit {
           this.result = res;
           this.qrResponse = this.result;
           if (this.result.message) {
-            Swal.fire({
-              title: '',
-              text: this.result.message,
-              icon: 'error',
-              heightAuto: false,
-            });
+            AppUtilities.showErrorMessage('', this.result.message);
           } else if (this.qrResponse) {
             const navigationExtras: NavigationExtras = {
               state: {
@@ -246,14 +239,7 @@ export class VerifycodePage implements OnInit {
           this.errMsg = err;
           this.resp = this.errMsg.error;
           this.msg = this.resp.message;
-
-          Swal.fire({
-            title: '',
-            text: this.msg,
-            icon: 'error',
-            heightAuto: false,
-          });
-          //console.log(JSON.stringify(err), 'erorr found');
+          AppUtilities.showErrorMessage('', this.msg);
         },
       });
     });
@@ -270,52 +256,33 @@ export class VerifycodePage implements OnInit {
       Number_Of_CheckingIn_Invitees: '1',
       User_Id: this.userId,
     };
+    AppUtilities.startLoading(this.loadingCtrl).then((loading) => {
+      this.service
+        .verifyQr(params)
+        .pipe(finalize(() => loading.dismiss()))
+        .subscribe({
+          next: (res) => {
+            this.verifyresponse = res;
+            if (this.verifyresponse.status == 1) {
+              AppUtilities.showSuccessMessage('', this.verifyresponse.message);
+              this.router.navigate(['tabs/dashboard']);
+              this.input = '';
+              ``;
+            } else {
+              AppUtilities.showErrorMessage('', this.verifyresponse.message);
+              this.input = '';
+            }
+          },
+          error: (error) => {
+            this.errMsg = error;
+            this.resp = this.errMsg.error;
+            this.msg = this.resp.message;
 
-    const loading = await this.loadingCtrl.create({
-      message: 'please wait...',
-      spinner: 'lines-small',
-    });
-    //  await loading.present();
-    const native = this.service.verifyQr(params);
-    from(native)
-      .pipe(finalize(() => loading.dismiss()))
-      .subscribe(
-        (res) => {
-          this.verifyresponse = res;
-          if (this.verifyresponse.status == 1) {
-            Swal.fire({
-              title: '',
-              text: this.verifyresponse.message,
-              icon: 'success',
-              heightAuto: false,
-            });
+            AppUtilities.showErrorMessage('', this.msg);
             this.router.navigate(['tabs/dashboard']);
-            this.input = '';
-            ``;
-          } else {
-            Swal.fire({
-              title: '',
-              text: this.verifyresponse.message,
-              icon: 'error',
-              heightAuto: false,
-            });
-            this.input = '';
-          }
-        },
-        (error) => {
-          this.errMsg = error;
-          this.resp = this.errMsg.error;
-          this.msg = this.resp.message;
-
-          Swal.fire({
-            title: '',
-            text: this.msg,
-            icon: 'error',
-            heightAuto: false,
-          });
-          this.router.navigate(['tabs/dashboard']);
-        }
-      );
+          },
+        });
+    });
   }
   changepass() {
     this.router.navigate(['changepwd']);

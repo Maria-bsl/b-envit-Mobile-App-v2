@@ -16,6 +16,7 @@ import { EventChoice } from '../services/params/eventschoice';
 import { ServiceService } from '../services/service.service';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatLegacyButtonModule as MatButtonModule } from '@angular/material/legacy-button';
+import { NavbarComponent } from '../components/layouts/navbar/navbar.component';
 
 @Component({
   selector: 'app-switch-event',
@@ -30,6 +31,7 @@ import { MatLegacyButtonModule as MatButtonModule } from '@angular/material/lega
     MatRadioModule,
     ReactiveFormsModule,
     MatButtonModule,
+    NavbarComponent,
   ],
 })
 export class SwitchEventComponent implements OnInit {
@@ -41,21 +43,13 @@ export class SwitchEventComponent implements OnInit {
     private service: ServiceService
   ) {}
   ngOnInit() {
-    this.eventsList = history.state.data;
-    if (!this.eventsList) {
-      this.eventsList = JSON.parse(localStorage.getItem('event_details_list'));
-      if (!this.eventsList) {
-        this.router.navigate(['login']);
-      } else {
-        let eventId = localStorage.getItem('event_id');
-        if (eventId !== undefined && eventId !== null) {
-          let found = this.eventsList.find(
-            (c) => c.event_id === Number(eventId)
-          );
-          if (found) {
-            this.selected = this.eventsList.indexOf(found);
-          }
-        }
+    this.eventsList = JSON.parse(localStorage.getItem('event_details_list'));
+    if (!this.eventsList) this.router.navigate(['login']);
+    let eventId = localStorage.getItem('event_id');
+    if (eventId !== undefined && eventId !== null) {
+      let found = this.eventsList.find((c) => c.event_id === Number(eventId));
+      if (found) {
+        this.selected = this.eventsList.indexOf(found);
       }
     }
   }
@@ -69,16 +63,17 @@ export class SwitchEventComponent implements OnInit {
     );
   }
   openSelectedEvent(selected: EventDetailsResponse) {
-    const navigationExtras: NavigationExtras = {
-      state: {
-        data_from_user: selected.event_id,
-      },
-    };
+    // const navigationExtras: NavigationExtras = {
+    //   state: {
+    //     data_from_user: selected.event_id,
+    //   },
+    // };
     localStorage.setItem(
       'event_id',
       this.eventsList.at(this.selected).event_id.toString()
     );
-    this.router.navigateByUrl('tabs/dashboard', navigationExtras);
+    //this.router.navigateByUrl('tabs/dashboard', navigationExtras);
+    this.router.navigate(['tabs/dashboard']);
   }
   async openDashboard() {
     if (this.selected === -1) {
@@ -92,10 +87,10 @@ export class SwitchEventComponent implements OnInit {
       event_id: selected.event_id.toString(),
     } as EventChoice;
     AppUtilities.startLoading(this.controller)
-      .then((c) => {
+      .then((loading) => {
         this.service
           .EventChoices(params)
-          .pipe(finalize(() => c.dismiss()))
+          .pipe(finalize(() => loading.dismiss()))
           .subscribe({
             next: (result: any) => {
               localStorage.setItem(

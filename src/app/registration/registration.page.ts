@@ -81,6 +81,8 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { AppUtilities } from '../core/utils/app-utilities';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-registration',
@@ -101,7 +103,8 @@ export class RegistrationPage implements OnInit {
     private router: Router,
     private loadingCtrl: LoadingController,
     private service: ServiceService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private location: Location
   ) {}
 
   ngOnInit() {
@@ -134,31 +137,28 @@ export class RegistrationPage implements OnInit {
       return;
     }
     const bodyparams = {
-      // visitor_name: this.PostData.visitor_name,
-      // no_of_persons: this.PostData.no_of_persons,
-      // table_number: this.PostData.table_number,
-      // email_address: this.PostData.email_address,
-      // mobile_no: '255' + this.PostData.mobile_no,
       ...this.formGroup.value,
       card_state_mas_sno: '1',
       event_det_sno: this.event_id,
       cust_reg_sno: this.cust_reg_sno,
       posted_by: this.posted_id,
     };
-    this.service.CustomerRegistration(bodyparams).subscribe((res) => {
-      this.response = res;
-      Swal.fire({
-        title: '',
-        text: this.response.response,
-        icon: 'success',
-        timer: 2000,
-        heightAuto: false,
-      });
-      this.router.navigate(['tabs/tab2']);
+    AppUtilities.startLoading(this.loadingCtrl).then((loading) => {
+      this.service
+        .CustomerRegistration(bodyparams)
+        .pipe(finalize(() => loading.dismiss()))
+        .subscribe({
+          next: (res) => {
+            this.response = res;
+            AppUtilities.showSuccessMessage('', this.response.response);
+            this.router.navigate(['tabs/tab2']);
+          },
+        });
     });
   }
   backBtn() {
-    this.router.navigate(['tabs/tab2']);
+    this.location.back();
+    //this.router.navigate(['tabs/tab2']);
   }
   get visitor_name() {
     return this.formGroup.get('visitor_name') as FormControl;

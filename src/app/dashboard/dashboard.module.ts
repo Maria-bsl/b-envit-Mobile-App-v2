@@ -17,9 +17,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
+import { NavbarComponent } from '../components/layouts/navbar/navbar.component';
 
 @NgModule({
   imports: [
+    NavbarComponent,
     CommonModule,
     IonicModule,
     MatFormFieldModule,

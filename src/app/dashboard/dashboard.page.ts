@@ -23,11 +23,13 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatSort } from '@angular/material/sort';
+import { inOutAnimation } from '../core/shared/fade-in-out-animation';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.scss'],
+  animations: [inOutAnimation],
 })
 export class DashboardPage implements OnInit, AfterViewInit {
   showingList: boolean = true;

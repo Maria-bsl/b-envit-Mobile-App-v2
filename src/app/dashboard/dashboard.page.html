@@ -1,19 +1,5 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title class="text-uppercase text-white fw-bold">B-Envit</ion-title>
-    <ion-buttons [matMenuTriggerFor]="belowMenu" [collapse]="true" slot="end">
-      <ion-button color="light">
-        <ion-icon slot="icon-only" name="person-circle"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <mat-menu #belowMenu="matMenu" yPosition="below">
-      <!-- <button mat-menu-item (click)="switchEvent()">Switch Event</button> -->
-      <button mat-menu-item (click)="changepass()">Change Password</button>
-      <button mat-menu-item (click)="logout()">Logout</button>
-    </mat-menu>
-  </ion-toolbar>
-</ion-header>
-<ion-content class="ion-padding">
+<app-navbar></app-navbar>
+<ion-content class="ion-ding">
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
     <ion-refresher-content
       pullingIcon="chevron-down-circle-outline"
@@ -106,6 +92,7 @@
             1; index as ind;"
           class="d-flex flex-column mb-2 rounded px-2 py-1 shadow-sm"
           [class]="ind % 2 === 0 ? 'gray-color' : 'bg-white'"
+          [@inOutAnimation]
         >
           <div
             class="d-flex align-items-center justify-content-between border-b p-1"
@@ -158,20 +145,35 @@
               paginator.pageSize -
               1; index as ind;"
             class="listMargin"
+            [@inOutAnimation]
           >
-            <td>{{invitee.visitor_name}}</td>
-            <td [ngClass]="getInviteeScanStatusColor(invitee.scan_status)">
-              {{invitee.scan_status}}
+            <td>
+              <ion-text>{{invitee.visitor_name}}</ion-text>
             </td>
-            <td>{{invitee.table_number}}</td>
-            <td>{{invitee.scanned_by}}</td>
+            <td>
+              <ion-text
+                [ngClass]="getInviteeScanStatusColor(invitee.scan_status)"
+                >{{invitee.scan_status}}</ion-text
+              >
+            </td>
+            <td>
+              <ion-text>{{invitee.table_number}}</ion-text>
+            </td>
+            <td>
+              <ion-text>{{invitee.scanned_by}}</ion-text>
+            </td>
           </tr>
         </tbody>
       </table>
     </ng-template>
+    <ng-container *ngIf="dataSource.filteredData.length === 0">
+      <ion-text
+        >No data matching the filter <b>"{{filterTerm.value}}"</b></ion-text
+      >
+    </ng-container>
     <mat-paginator
       #paginator
-      [length]="dataSource.data.length"
+      [length]="dataSource.filteredData.length"
       [pageSize]="5"
       aria-label="Select page"
       [showFirstLastButtons]="true"

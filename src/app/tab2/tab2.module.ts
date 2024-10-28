@@ -13,9 +13,11 @@ import { MatLegacyMenuModule as MatMenuModule } from '@angular/material/legacy-m
 import { MatLegacyFormFieldModule as MatFormFieldModule } from '@angular/material/legacy-form-field';
 import { MatLegacyInputModule as MatInputModule } from '@angular/material/legacy-input';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { NavbarComponent } from '../components/layouts/navbar/navbar.component';
 
 @NgModule({
   imports: [
+    NavbarComponent,
     IonicModule,
     CommonModule,
     FormsModule,
