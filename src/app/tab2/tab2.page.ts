@@ -1,138 +1,61 @@
-// import { Component, OnInit } from '@angular/core';
-// import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
-// import { LoadingController } from '@ionic/angular';
-// import { from } from 'rxjs';
-// import { finalize } from 'rxjs/operators';
-//  import Swal from 'sweetalert2';
-//  import { ServiceService } from '../services/service.service';
-
-// @Component({
-//   selector: 'app-tab2',
-//   templateUrl: 'tab2.page.html',
-//   styleUrls: ['tab2.page.scss']
-// })
-// export class Tab2Page implements OnInit {
-//   userInfo: any;
-//   listOfInvitee: any;
-//   guestIn: any;
-//   eventname: string;
-
-//   // eslint-disable-next-line @typescript-eslint/naming-convention
-//   event_id: any;
-//   filterTerm: string;
-//   private readonly eventIDs = 'event_id';
-//   // eslint-disable-next-line @typescript-eslint/naming-convention
-//   private readonly event_name = 'event_name';
-
-//   private readonly totalVisitor = 'totalVisitor';
-//   result: any;
-//   qrResponse: any;
-//   errMsg: any;
-//   resp: any;
-//   msg: any;
-//   inviteeArr: any
-//   // eslint-disable-next-line max-len
-//   constructor(private service: ServiceService, private loadingCtrl: LoadingController, private router: Router, private route: ActivatedRoute) {
-//   }
-//   async ngOnInit() {
-//     this.eventname = localStorage.getItem(this.event_name);
-
-//     this.event_id = localStorage.getItem(this.eventIDs);
-//     // eslint-disable-next-line @typescript-eslint/naming-convention
-//     const body = { event_id: this.event_id };
-//     const loading = await this.loadingCtrl.create({
-//       message: '',
-//       spinner: 'lines-small'
-//     });
-//     loading.present();
-//     const native = this.service.getAllinvitee(body.event_id);
-//     from(native).pipe(
-//       finalize(() => loading.dismiss()))
-//       .subscribe
-//       (
-//         res => {
-//           this.inviteeArr = res;
-//           this.listOfInvitee = this.inviteeArr.visitors;
-//           // this.guestIn = this.inviteeArr.invitees_count;
-//            }
-//       );
-//   }
-//   async sendQr(qrcode: any) {
-//     // eslint-disable-next-line @typescript-eslint/naming-convention
-//     const body = { qr_code: qrcode, event_id: this.event_id };
-//     console.log(JSON.stringify(body), 'qrcode entered');
-//     const loading = await this.loadingCtrl.create({
-//       message: 'please wait...',
-//       spinner: 'lines-small'
-//     });
-//     await loading.present();
-//     const native = this.service.sendQr(body);
-//     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-//     from(native).pipe(
-//       finalize(() => loading.dismiss()))
-//       .subscribe(
-//         res => {
-//           this.result = res;
-//           this.qrResponse = this.result;
-//           console.log(JSON.stringify(this.result),"response")
-//           if (this.result.message) {
-//             Swal.fire({
-//               title: '',
-//               text: this.result.message,
-//               icon: 'error'
-//             });
-//           } else if (this.qrResponse) {
-//             const navigationExtras: NavigationExtras = {
-//               state: {
-//                 qrinfo: this.qrResponse,
-//                 qrcode: qrcode
-//               }
-//             };
-//             this.router.navigate(['tabs/verifyuser'], navigationExtras);
-//           }
-
-//         },
-//          error=>{
-//           this.errMsg = error;
-//            this.resp = this.errMsg.error;
-//           this.msg = this.resp.message
-
-//           Swal.fire({
-//             title: '',
-//             text: this.msg,
-//             icon: 'error'
-//           });
-//            console.log(JSON.stringify(error), "erorr found")
-//          }
-//       );
-
-//     }
-//     addInvitees(){
-//       this.router.navigate(['registration'])
-//     }
-
-// }
-
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EnvironmentInjector,
+  OnDestroy,
+  OnInit,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core';
 import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
-import { LoadingController } from '@ionic/angular';
+import {
+  AnimationController,
+  IonicModule,
+  LoadingController,
+} from '@ionic/angular';
 import { from, Subscription } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { ServiceService } from '../services/service.service';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
 import { inOutAnimation } from '../core/shared/fade-in-out-animation';
 import { AppUtilities } from '../core/utils/app-utilities';
+import { MatLegacyMenuModule as MatMenuModule } from '@angular/material/legacy-menu';
+import { MatLegacyFormFieldModule as MatFormFieldModule } from '@angular/material/legacy-form-field';
+import { MatLegacyInputModule as MatInputModule } from '@angular/material/legacy-input';
+import {
+  MatLegacyPaginatorModule as MatPaginatorModule,
+  MatLegacyPaginator as MatPaginator,
+} from '@angular/material/legacy-paginator';
+import { Ng2SearchPipeModule } from 'ng2-search-filter';
+import { NavbarComponent } from '../components/layouts/navbar/navbar.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-tab2',
   templateUrl: 'tab2.page.html',
   styleUrls: ['tab2.page.scss'],
   animations: [inOutAnimation],
+  standalone: true,
+  imports: [
+    NavbarComponent,
+    IonicModule,
+    CommonModule,
+    FormsModule,
+    MatMenuModule,
+    MatPaginatorModule,
+    ReactiveFormsModule,
+    MatMenuModule,
+    MatFormFieldModule,
+    MatInputModule,
+
+    Ng2SearchPipeModule,
+  ],
 })
-export class Tab2Page implements OnInit, OnDestroy {
+export class Tab2Page implements OnInit, OnDestroy, AfterViewInit {
   subscriptions: Subscription[] = [];
   showingList: boolean = true;
   userInfo: any;
@@ -159,11 +82,13 @@ export class Tab2Page implements OnInit, OnDestroy {
   tableLoading: boolean = false;
   searchInput: FormControl = new FormControl('', []);
   @ViewChild('paginator') paginator!: MatPaginator;
+  @ViewChildren('templateList', { read: ElementRef })
+  templateListRef: QueryList<ElementRef>;
   constructor(
     private service: ServiceService,
     private loadingCtrl: LoadingController,
     private router: Router,
-    private route: ActivatedRoute
+    private animationCtrl: AnimationController
   ) {}
   private dataSourceFilter() {
     let filterPredicate = (data: any, filter: string) => {
@@ -191,6 +116,25 @@ export class Tab2Page implements OnInit, OnDestroy {
   ngOnInit() {
     this.requestInviteesList();
     this.searchInputChanged();
+  }
+  ngAfterViewInit(): void {
+    this.initListAnimation();
+  }
+  initListAnimation() {
+    const itemRefArray = this.templateListRef.toArray();
+    for (let i = 0; i < itemRefArray.length; i++) {
+      const element = itemRefArray[i].nativeElement;
+
+      this.animationCtrl
+        .create()
+        .addElement(element)
+        .duration(1000)
+        .delay(i * (1000 / 3))
+        .easing('cubic-bezier(0.4, 0.0, 0.2, 1.0)')
+        .fromTo('transform', 'translateY(50px)', 'translateY(0px)')
+        .fromTo('opacity', '0', '1')
+        .play();
+    }
   }
   requestInviteesList() {
     this.eventname = localStorage.getItem(this.event_name);

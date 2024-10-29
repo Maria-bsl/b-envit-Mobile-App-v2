@@ -6,8 +6,9 @@ import { DashboardPage } from './dashboard.page';
 const routes: Routes = [
   {
     path: '',
-    component: DashboardPage
-  }
+    loadComponent: () =>
+      import('./dashboard.page').then((c) => c.DashboardPage),
+  },
 ];
 
 @NgModule({

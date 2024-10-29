@@ -84,10 +84,30 @@ import {
 import { AppUtilities } from '../core/utils/app-utilities';
 import { Location } from '@angular/common';
 
+import { MatLegacySelectModule as MatSelectModule } from '@angular/material/legacy-select';
+import { MatLegacyFormFieldModule as MatFormFieldModule } from '@angular/material/legacy-form-field';
+import { MatLegacyInputModule as MatInputModule } from '@angular/material/legacy-input';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
+import { IonicModule } from '@ionic/angular';
+
 @Component({
   selector: 'app-registration',
   templateUrl: './registration.page.html',
   styleUrls: ['./registration.page.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonicModule,
+    MatSelectModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatPaginatorModule,
+    ReactiveFormsModule,
+  ],
 })
 export class RegistrationPage implements OnInit, OnDestroy {
   private readonly TOKEN_user = 'bizlogicj';

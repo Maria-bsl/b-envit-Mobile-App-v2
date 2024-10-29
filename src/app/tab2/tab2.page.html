@@ -36,7 +36,7 @@
         </ion-button>
       </div>
       <ng-container *ngIf="showingList; else tableView">
-        <div id="list-view" class="d-flex flex-column">
+        <div id="list-view" class="d-flex flex-column" [@inOutAnimation]>
           <div
             *ngFor="let invitee of dataSource.filteredData | slice
             : 1 + paginator.pageSize * paginator.pageIndex - 1
@@ -44,9 +44,9 @@
                 paginator.pageSize * paginator.pageIndex +
                 paginator.pageSize -
                 1; index as ind;"
-            [@inOutAnimation]
             class="d-flex flex-column mb-2 rounded px-2 py-1 shadow-sm"
             [class]="ind % 2 === 0 ? 'gray-color' : 'bg-white'"
+            #templateList
           >
             <div
               class="d-flex align-items-center justify-content-between border-b p-1"
@@ -86,7 +86,7 @@
         </div>
       </ng-container>
       <ng-template #tableView>
-        <div style="overflow-x: auto; overflow-y: auto">
+        <div [@inOutAnimation] style="overflow-x: auto; overflow-y: auto">
           <table
             class="table table-striped table table-striped"
             style="position: sticky"
@@ -107,7 +107,6 @@
                   paginator.pageSize * paginator.pageIndex +
                   paginator.pageSize -
                   1; index as ind;"
-                [@inOutAnimation]
                 class="listMargin"
               >
                 <td>

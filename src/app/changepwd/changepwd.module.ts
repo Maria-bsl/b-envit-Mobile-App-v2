@@ -28,6 +28,6 @@ import { MatLegacyInputModule as MatInputModule } from '@angular/material/legacy
     ReactiveFormsModule,
     ChangepwdPageRoutingModule,
   ],
-  declarations: [ChangepwdPage],
+  //declarations: [ChangepwdPage],
 })
 export class ChangepwdPageModule {}

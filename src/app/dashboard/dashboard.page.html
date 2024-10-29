@@ -1,4 +1,5 @@
 <app-navbar></app-navbar>
+<!-- <div [class]="isScanning ? 'scan-box' : ''"></div> -->
 <ion-content class="ion-padding">
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
     <ion-refresher-content
@@ -37,11 +38,11 @@
       </ion-col>
       <ion-col size="6" class="d-flex flex-column">
         <div class="visitor-stats d-flex flex-column align-items-end mb-4">
-          <ion-text class="mb-2"> Visitors In </ion-text>
+          <ion-text class="mb-2"> In </ion-text>
           <ion-text color="success"> {{guestIn}} </ion-text>
         </div>
         <div class="visitor-stats d-flex flex-column align-items-end">
-          <ion-text class="mb-2"> Visitors remaining </ion-text>
+          <ion-text class="mb-2"> Remaining </ion-text>
           <ion-text color="danger"> {{remains}} </ion-text>
         </div>
       </ion-col>
@@ -82,7 +83,7 @@
       </ion-button>
     </div>
     <ng-container *ngIf="showingList; else tableView">
-      <div id="list-view" class="d-flex flex-column">
+      <div [@inOutAnimation] id="list-view" class="d-flex flex-column">
         <div
           *ngFor="let invitee of dataSource.filteredData | slice
         : 1 + paginator.pageSize * paginator.pageIndex - 1
@@ -92,7 +93,6 @@
             1; index as ind;"
           class="d-flex flex-column mb-2 rounded px-2 py-1 shadow-sm"
           [class]="ind % 2 === 0 ? 'gray-color' : 'bg-white'"
-          [@inOutAnimation]
         >
           <div
             class="d-flex align-items-center justify-content-between border-b p-1"
@@ -127,7 +127,7 @@
       </div>
     </ng-container>
     <ng-template #tableView>
-      <table class="table table-striped table-striped">
+      <table [@inOutAnimation] class="table table-striped table-striped">
         <thead>
           <tr *ngIf="listOfInvitee">
             <th>Visitor Name</th>
@@ -145,7 +145,6 @@
               paginator.pageSize -
               1; index as ind;"
             class="listMargin"
-            [@inOutAnimation]
           >
             <td>
               <ion-text>{{invitee.visitor_name}}</ion-text>

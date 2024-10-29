@@ -12,26 +12,14 @@ import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { MatLegacyMenuModule as MatMenuModule } from '@angular/material/legacy-menu';
 import { MatLegacyFormFieldModule as MatFormFieldModule } from '@angular/material/legacy-form-field';
 import { MatLegacyInputModule as MatInputModule } from '@angular/material/legacy-input';
-import { MatPaginatorModule } from '@angular/material/paginator';
+import {
+  MatLegacyPaginatorModule as MatPaginatorModule,
+  MatLegacyPaginator as MatPaginator,
+} from '@angular/material/legacy-paginator';
 import { NavbarComponent } from '../components/layouts/navbar/navbar.component';
 
 @NgModule({
-  imports: [
-    NavbarComponent,
-    IonicModule,
-    CommonModule,
-    FormsModule,
-    MatMenuModule,
-    MatPaginatorModule,
-    ReactiveFormsModule,
-    MatMenuModule,
-    MatFormFieldModule,
-    MatInputModule,
-
-    Ng2SearchPipeModule,
-    NgxPaginationModule,
-    Tab2PageRoutingModule,
-  ],
-  declarations: [Tab2Page],
+  imports: [Tab2PageRoutingModule],
+  //declarations: [Tab2Page],
 })
 export class Tab2PageModule {}

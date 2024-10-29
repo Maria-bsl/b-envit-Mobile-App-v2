@@ -13,36 +13,7 @@ import { MatLegacyInputModule as MatInputModule } from '@angular/material/legacy
 import { MatPaginatorModule } from '@angular/material/paginator';
 
 @NgModule({
-  imports: [
-    // CommonModule,
-    // FormsModule,
-    // IonicModule,
-    // MatSelectModule,
-    // MatInputModule,
-    // MatFormFieldModule,
-
-    // CommonModule,
-    // FormsModule,
-    // IonicModule,
-    // MatSelectModule,
-    // MatInputModule,
-    // MatFormFieldModule,
-    // MatProgressSpinnerModule,
-    // MatFormFieldModule,
-    // MatInputModule,
-    // MatPaginatorModule,
-    // ReactiveFormsModule,
-    // RegistrationPageRoutingModule,
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    MatSelectModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatPaginatorModule,
-    ReactiveFormsModule,
-    RegistrationPageRoutingModule,
-  ],
-  declarations: [RegistrationPage],
+  imports: [RegistrationPageRoutingModule],
+  //declarations: [RegistrationPage],
 })
 export class RegistrationPageModule {}

@@ -1,26 +1,25 @@
 import {
   AfterViewInit,
-  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  ElementRef,
   OnDestroy,
   OnInit,
   ViewChild,
 } from '@angular/core';
 import { ActivatedRoute, Router, NavigationExtras } from '@angular/router';
-import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner/ngx';
+import { QRScanner } from '@ionic-native/qr-scanner/ngx';
 import { IonicModule, LoadingController, Platform } from '@ionic/angular';
 import { BehaviorSubject, from, Subscription, zip } from 'rxjs';
 import { finalize } from 'rxjs/operators';
-// import { QrresultPage, userData } from '../qrresult/qrresult.page';
 import { ServiceService } from '../services/service.service';
-import { Chart } from 'chart.js';
 import * as Highcharts from 'highcharts';
 import { AppUtilities } from '../core/utils/app-utilities';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import {
+  MatLegacyPaginatorModule as MatPaginatorModule,
+  MatLegacyPaginator as MatPaginator,
+} from '@angular/material/legacy-paginator';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -34,7 +33,6 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { NavbarComponent } from '../components/layouts/navbar/navbar.component';
-import { NgCircleProgressModule } from 'ng-circle-progress';
 
 @Component({
   selector: 'app-dashboard',
@@ -61,6 +59,7 @@ import { NgCircleProgressModule } from 'ng-circle-progress';
   ],
 })
 export class DashboardPage implements OnInit, AfterViewInit, OnDestroy {
+  isScanning: boolean = false;
   showingList: boolean = true;
   displayedColumns: string[] = [
     'Visitor Name',
@@ -267,8 +266,26 @@ export class DashboardPage implements OnInit, AfterViewInit, OnDestroy {
       );
     });
   }
+  private closeScanner() {
+    this.toggleBodyStyle(false);
+    this.qrScanner.hide();
+    this.qrScanner.destroy();
+    if (this.scanSub) {
+      this.scanSub.unsubscribe();
+    }
+  }
+  private toggleBodyStyle(show: boolean): void {
+    let body = document.getElementsByTagName('ion-app')[0] as HTMLIonAppElement;
+    this.isScanning = show;
+    if (show) {
+      body.style.visibility = 'hidden';
+      window.document.body.style.backgroundColor = 'transparent';
+    } else {
+      body.style.visibility = 'visible';
+      window.document.body.style.backgroundColor = '#FFFFFF';
+    }
+  }
   startScanning() {
-    let body = document.getElementsByTagName('body')[0];
     //Optionally request the permission early
     this.qrScanner
       .prepare()
@@ -276,17 +293,15 @@ export class DashboardPage implements OnInit, AfterViewInit, OnDestroy {
         if (status.denied) {
           this.qrScanner.hide();
         } else if (status.authorized) {
+          this.toggleBodyStyle(true);
           this.qrScanner.show();
-          body.style.opacity = '0';
+          this.platform.backButton.subscribeWithPriority(10, () => {
+            this.closeScanner();
+          });
           this.subscriptions.push(
             (this.scanSub = this.qrScanner.scan().subscribe({
               next: (textFound) => {
-                body.style.opacity = '1';
-                this.qrScanner.hide();
-                this.qrScanner.destroy();
-                if (this.scanSub) {
-                  this.scanSub.unsubscribe();
-                }
+                this.closeScanner();
                 this.qrText = textFound;
                 this.sendResult(this.qrText);
               },
