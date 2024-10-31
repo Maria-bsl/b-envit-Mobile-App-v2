@@ -1,68 +1,3 @@
-// import { Component, OnInit } from '@angular/core';
-// import { Router } from '@angular/router';
-// import { IonicModule, LoadingController } from '@ionic/angular';
-// import { from } from 'rxjs';
-// import { finalize } from 'rxjs/operators';
-// import Swal from 'sweetalert2';
-// import { ServiceService } from '../services/service.service';
-// import { CommonModule } from '@angular/common';
-// import { FormsModule } from '@angular/forms';
-// import { MatNativeDateModule } from '@angular/material/core';
-// import { MatFormFieldModule } from '@angular/material/form-field';
-// import { MatInputModule } from '@angular/material/input';
-// import { RecoverpwdPageRoutingModule } from './recoverpwd-routing.module';
-
-// @Component({
-//   selector: 'app-recoverpwd',
-//   templateUrl: './recoverpwd.page.html',
-//   styleUrls: ['./recoverpwd.page.scss'],
-// })
-// export class RecoverpwdPage implements OnInit {
-//   response: any;
-
-//   constructor(
-//     private service: ServiceService,
-//     private router: Router,
-//     private loadingCtrl: LoadingController
-//   ) {}
-//   PostData = {
-//     mobile_number: '',
-//   };
-//   ngOnInit() {}
-//   async forgetpwd() {
-//     const loading = await this.loadingCtrl.create({
-//       // message: '',
-//       spinner: 'bubbles',
-//     });
-//     await loading.present();
-//     const body = { mobile_number: '0' + this.PostData.mobile_number };
-//     let native = this.service.Forgetpwd(body.mobile_number);
-//     from(native)
-//       .pipe(finalize(() => loading.dismiss()))
-//       .subscribe((res) => {
-//         this.response = res;
-//         if (this.response.status == 1) {
-//           Swal.fire({
-//             title: '',
-//             text: 'Credentials has been sent to your mobile number.',
-//             icon: 'success',
-//           });
-//           this.router.navigate(['login']);
-//         } else {
-//           Swal.fire({
-//             title: '',
-//             text: 'Invalid mobile number',
-//             icon: 'error',
-//           });
-//         }
-//       }),
-//       (error) => {};
-//   }
-//   loginpage() {
-//     this.router.navigate(['login']);
-//   }
-// }
-
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
@@ -77,22 +12,51 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
+import { IonicModule } from '@ionic/angular';
+
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatLegacyInputModule as MatInputModule } from '@angular/material/legacy-input';
+import { MatLegacyFormFieldModule as MatFormFieldModule } from '@angular/material/legacy-form-field';
+import { MatLegacyButtonModule as MatButtonModule } from '@angular/material/legacy-button';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateConfigService } from '../translate-config.service';
 
 @Component({
   selector: 'app-recoverpwd',
   templateUrl: './recoverpwd.page.html',
   styleUrls: ['./recoverpwd.page.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonicModule,
+    MatNativeDateModule,
+    MatInputModule,
+    MatFormFieldModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    TranslateModule,
+  ],
 })
 export class RecoverpwdPage implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   response: any;
   PostData!: FormGroup;
+  language: any;
   constructor(
     private service: ServiceService,
     private router: Router,
     private loadingCtrl: LoadingController,
-    private fb: FormBuilder
-  ) {}
+    private fb: FormBuilder,
+    private translateConfigService: TranslateConfigService,
+    private translate: TranslateService
+  ) {
+    this.translateConfigService.getDefaultLanguage();
+    this.language = this.translateConfigService.getCurrentLang();
+  }
   private createPostDataFormGroup() {
     this.PostData = this.fb.group({
       mobile_number: this.fb.control('', [

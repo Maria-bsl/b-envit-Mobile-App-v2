@@ -21,6 +21,8 @@ import { IonicModule } from '@ionic/angular';
 
 import { MatLegacyFormFieldModule as MatFormFieldModule } from '@angular/material/legacy-form-field';
 import { MatLegacyInputModule as MatInputModule } from '@angular/material/legacy-input';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateConfigService } from '../translate-config.service';
 
 @Component({
   selector: 'app-changepwd',
@@ -34,6 +36,7 @@ import { MatLegacyInputModule as MatInputModule } from '@angular/material/legacy
     MatInputModule,
     MatFormFieldModule,
     ReactiveFormsModule,
+    TranslateModule,
   ],
 })
 export class ChangepwdPage implements OnInit {
@@ -44,17 +47,19 @@ export class ChangepwdPage implements OnInit {
   errMsg: any;
   resp: any;
   msg: any;
+  language: any;
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private service: ServiceService,
     private loadingCtrl: LoadingController,
-    private location: Location
-  ) {}
-  // postData = {
-  //   current_password: '',
-  //   New_Password: '',
-  // };
+    private location: Location,
+    private translateConfigService: TranslateConfigService,
+    private translate: TranslateService
+  ) {
+    this.translateConfigService.getDefaultLanguage();
+    this.language = this.translateConfigService.getCurrentLang();
+  }
   private getChangePasswordPayload(form: any) {
     let body = new Map();
     body.set('mobile_number', this.mobileNumber);
@@ -107,44 +112,12 @@ export class ChangepwdPage implements OnInit {
           this.router.navigate(['login']);
         },
         error: (err) => {
-          Swal.fire({
-            title: '',
-            text: err.error.Message,
-            icon: 'error',
-            heightAuto: false,
-          });
+          AppUtilities.showErrorMessage('', err.error.Message);
         },
       });
-      // from(native)
-      //   .pipe(finalize(() => c.dismiss()))
-      //   .subscribe(
-      //     (res) => {
-      //       this.response = res;
-      //       Swal.fire({
-      //         title: '',
-      //         text: 'Password Successfuly changed',
-      //         icon: 'success',
-      //         heightAuto: false,
-      //       });
-      //       this.router.navigate(['login']);
-      //     },
-      //     (error) => {
-      //       this.errMsg = error;
-      //       this.resp = JSON.parse(this.errMsg.error);
-      //       this.msg = this.resp.message;
-
-      //       Swal.fire({
-      //         title: '',
-      //         text: this.msg,
-      //         icon: 'error',
-      //         heightAuto: false,
-      //       });
-      //     }
-      //   );
     });
   }
   backBtn() {
-    //this.router.navigate(['..']);
     this.location.back();
   }
   get current_password() {

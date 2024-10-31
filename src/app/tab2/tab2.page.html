@@ -11,12 +11,13 @@
   </ion-refresher>
   <div class="d-flex flex-column w-100">
     <div class="d-flex justify-content-between mb-2">
-      <h1 class="display-4">List of all visitors</h1>
+      <ion-text class="display-4"> {{"tabs2.title" | translate}} </ion-text>
       <ion-button (click)="addInvitees()" aria-label="Add">
         <ion-icon name="add-outline"></ion-icon>
       </ion-button>
     </div>
     <ion-searchbar
+      placeholder="{{'dashboardPage.search' | translate}}"
       showCancelButton="focus"
       [formControl]="searchInput"
     ></ion-searchbar>
@@ -49,6 +50,23 @@
             #templateList
           >
             <div
+              *ngFor="let column of 'tabs2.visitorsList' | translate; index as i"
+              class="d-flex align-items-center justify-content-between border-b p-1"
+            >
+              <ion-text class="fw-bold">{{column}}</ion-text>
+              <ion-text class="text-right"
+                >{{getTableValue(invitee,i)}}</ion-text
+              >
+            </div>
+            <div
+              class="d-flex align-items-center justify-content-between border-b p-1"
+            >
+              <ion-text class="fw-bold"></ion-text>
+              <button mat-icon-button (click)="scanVisitor(ind)">
+                <mat-icon svgIcon="qr-code-scan" matPrefix></mat-icon>
+              </button>
+            </div>
+            <!-- <div
               class="d-flex align-items-center justify-content-between border-b p-1"
             >
               <ion-text class="fw-bold">Visitor Name</ion-text>
@@ -72,17 +90,15 @@
               <ion-text class="fw-bold">Table No.</ion-text>
               <ion-text class="text-right">{{invitee.table_number}}</ion-text>
             </div>
+            <div
+              class="d-flex align-items-center justify-content-between border-b p-1"
+            >
+              <ion-text class="fw-bold"></ion-text>
+              <button mat-icon-button (click)="scanVisitor(ind)">
+                <mat-icon svgIcon="qr-code-scan" matPrefix></mat-icon>
+              </button>
+            </div> -->
           </div>
-          <ng-container *ngIf="!tableLoading">
-            <div class="border-t border-b grid place-items-center">
-              <ion-text
-                *ngIf="dataSource.data.length <= 0"
-                class="text-center text-sm tracking-wide p-3"
-              >
-                No invitees yet
-              </ion-text>
-            </div>
-          </ng-container>
         </div>
       </ng-container>
       <ng-template #tableView>
@@ -93,10 +109,12 @@
           >
             <thead>
               <tr>
-                <th>Visitor Name</th>
-                <th>Mobile</th>
-                <th>Size</th>
-                <th>Table</th>
+                <th
+                  *ngFor="let column of 'tabs2.visitorsList' | translate; index as i"
+                >
+                  <ion-text>{{column}}</ion-text>
+                </th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -109,17 +127,15 @@
                   1; index as ind;"
                 class="listMargin"
               >
-                <td>
-                  <ion-text>{{invitee.visitor_name}}</ion-text>
+                <td
+                  *ngFor="let column of 'dashboardPage.checkedInviteesTable' | translate; index as i"
+                >
+                  <ion-text>{{getTableValue(invitee,i)}}</ion-text>
                 </td>
                 <td>
-                  <ion-text>{{invitee.mobile_no}}</ion-text>
-                </td>
-                <td>
-                  <ion-text>{{invitee.no_of_persons}}</ion-text>
-                </td>
-                <td>
-                  <ion-text>{{invitee.table_number}}</ion-text>
+                  <button mat-icon-button (click)="scanVisitor(ind)">
+                    <mat-icon svgIcon="qr-code-scan" matPrefix></mat-icon>
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -127,7 +143,9 @@
         </div>
       </ng-template>
 
-      <ng-container *ngIf="dataSource.filteredData.length === 0">
+      <ng-container
+        *ngIf="dataSource.data.length > 0 && dataSource.filteredData.length === 0"
+      >
         <ion-text
           >No data matching the filter <b>"{{searchInput.value}}"</b></ion-text
         >

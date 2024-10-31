@@ -37,7 +37,26 @@ export class AppUtilities {
       heightAuto: false,
     });
   }
+  static showSuccessToast(title: string) {
+    Swal.fire({
+      icon: 'success',
+      title: title,
+      toast: true,
+      position: 'center',
+      showConfirmButton: false,
+      timer: 3000,
+    });
+  }
   static httpE;
+  static confirmAction(title) {
+    return Swal.fire({
+      title: title,
+      showDenyButton: false,
+      showCancelButton: true,
+      confirmButtonText: 'Scan',
+      heightAuto: false,
+    });
+  }
   static matchValidator(matchTo: string, reverse?: boolean): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       if (control.parent && reverse) {

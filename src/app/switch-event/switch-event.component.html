@@ -1,8 +1,12 @@
 <app-navbar></app-navbar>
 <ion-content class="ion-padding">
   <div class="d-flex flex-column py-4">
-    <ion-text class="display-4">Welcome</ion-text>
-    <ion-text class="small">Please select an event to continue.</ion-text>
+    <ion-text class="display-4">
+      {{ "switchEvent.welcomeText" | translate }}
+    </ion-text>
+    <ion-text class="small">
+      {{ "switchEvent.selectEventText" | translate }}
+    </ion-text>
   </div>
   <mat-list role="list" class="w-100">
     <mat-list-item
@@ -30,6 +34,6 @@
     type="ngSubmit"
     class="w-100"
   >
-    Continue
+    {{ "defaults.actions.continue" | translate }}
   </button>
 </ion-content>

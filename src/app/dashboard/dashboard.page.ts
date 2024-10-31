@@ -33,6 +33,9 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { NavbarComponent } from '../components/layouts/navbar/navbar.component';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { CheckedInviteesTable } from '../core/enums/checked-invitees-table';
+import { MatLegacyDialogModule as MatDialogModule } from '@angular/material/legacy-dialog';
 
 @Component({
   selector: 'app-dashboard',
@@ -56,17 +59,15 @@ import { NavbarComponent } from '../components/layouts/navbar/navbar.component';
     ReactiveFormsModule,
     Ng2SearchPipeModule,
     HighchartsChartModule,
+    TranslateModule,
+    MatDialogModule,
   ],
 })
 export class DashboardPage implements OnInit, AfterViewInit, OnDestroy {
   isScanning: boolean = false;
   showingList: boolean = true;
-  displayedColumns: string[] = [
-    'Visitor Name',
-    'Scanned',
-    'Table No#',
-    'Verified By',
-  ];
+  CheckedInviteesTable: typeof CheckedInviteesTable = CheckedInviteesTable;
+  displayedColumns: string[] = [];
   scanSub: any;
   qrText: string;
   userInfo: any;
@@ -105,15 +106,6 @@ export class DashboardPage implements OnInit, AfterViewInit, OnDestroy {
       width: 200,
       backgroundColor: '#ffffff',
     },
-    subtitle: {
-      verticalAlign: 'middle',
-      floating: true,
-      text: 'Total',
-      y: 36,
-      style: {
-        fontSize: '16px',
-      },
-    },
     series: [],
   };
   //@ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -128,7 +120,8 @@ export class DashboardPage implements OnInit, AfterViewInit, OnDestroy {
     public platform: Platform,
     private cdr: ChangeDetectorRef,
     private iconRegistry: MatIconRegistry,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private translate: TranslateService
   ) {
     this.platform.backButton.subscribeWithPriority(0, () => {
       document.getElementsByTagName('body')[0].style.opacity = '1';
@@ -142,6 +135,11 @@ export class DashboardPage implements OnInit, AfterViewInit, OnDestroy {
     // this.dataSource.sort = this.sort;
   }
   ngOnInit() {
+    this.translate.get('dashboardPage.checkedInviteesTable').subscribe({
+      next: (labels) => {
+        this.displayedColumns = labels;
+      },
+    });
     this.eventname = localStorage.getItem(this.event_name);
     this.verifycardlist();
     this.subscriptions.push(
@@ -215,32 +213,49 @@ export class DashboardPage implements OnInit, AfterViewInit, OnDestroy {
   private updateChartOptions() {
     const self = this,
       chart = this.chart;
-    self.chartOptions.title = {
-      verticalAlign: 'middle',
-      floating: true,
-      text: `${this.totalGuest}`,
-      //y: -2,
-      style: {
-        fontSize: '24px',
-      },
-    };
-    self.chartOptions.series = [
-      {
-        type: 'pie',
-        dataLabels: {
-          connectorWidth: 0,
-        },
-        data: [
-          { y: this.guestIn, color: '#2dd36f', name: '' },
-          {
-            y: this.remains,
-            color: '#eb445a',
-            name: '',
+    this.translate.get('dashboardPage.topBanner.chart').subscribe({
+      next: (chartLabels) => {
+        self.chartOptions.title = {
+          verticalAlign: 'middle',
+          floating: true,
+          text: `${this.totalGuest}`,
+          style: {
+            fontSize: '24px',
           },
-        ],
-        innerSize: '80%',
+        };
+        (self.chartOptions.subtitle = {
+          verticalAlign: 'middle',
+          floating: true,
+          text: chartLabels.total,
+          y: 36,
+          style: {
+            fontSize: '16px',
+          },
+        }),
+          (self.chartOptions.series = [
+            {
+              type: 'pie',
+              dataLabels: {
+                connectorWidth: 0,
+                enabled: false,
+              },
+              data: [
+                {
+                  y: this.guestIn,
+                  color: '#2dd36f',
+                  name: chartLabels.checked,
+                },
+                {
+                  y: this.remains,
+                  color: '#eb445a',
+                  name: chartLabels.unchecked,
+                },
+              ],
+              innerSize: '80%',
+            },
+          ]);
       },
-    ];
+    });
     self.updateFromInput = true;
   }
   private verifycardlist() {
@@ -283,6 +298,20 @@ export class DashboardPage implements OnInit, AfterViewInit, OnDestroy {
     } else {
       body.style.visibility = 'visible';
       window.document.body.style.backgroundColor = '#FFFFFF';
+    }
+  }
+  getTableValue(invitee: any, index: number) {
+    switch (index) {
+      case CheckedInviteesTable.VISITOR_NAME:
+        return invitee.visitor_name;
+      case CheckedInviteesTable.SCANNED:
+        return invitee.scan_status;
+      case CheckedInviteesTable.TABLE_NUMBER:
+        return invitee.table_number;
+      case CheckedInviteesTable.VERIFIED_BY:
+        return invitee.scanned_by;
+      default:
+        return '';
     }
   }
   startScanning() {

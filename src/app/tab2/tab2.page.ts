@@ -24,6 +24,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { inOutAnimation } from '../core/shared/fade-in-out-animation';
 import { AppUtilities } from '../core/utils/app-utilities';
 import { MatLegacyMenuModule as MatMenuModule } from '@angular/material/legacy-menu';
+import { MatLegacyButtonModule as MatButtonModule } from '@angular/material/legacy-button';
 import { MatLegacyFormFieldModule as MatFormFieldModule } from '@angular/material/legacy-form-field';
 import { MatLegacyInputModule as MatInputModule } from '@angular/material/legacy-input';
 import {
@@ -33,6 +34,10 @@ import {
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { NavbarComponent } from '../components/layouts/navbar/navbar.component';
 import { CommonModule } from '@angular/common';
+import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
+import { DomSanitizer } from '@angular/platform-browser';
+import { TranslateModule } from '@ngx-translate/core';
+import { InviteesTable } from '../core/enums/invitees-table';
 
 @Component({
   selector: 'app-tab2',
@@ -45,14 +50,16 @@ import { CommonModule } from '@angular/common';
     IonicModule,
     CommonModule,
     FormsModule,
+    MatIconModule,
     MatMenuModule,
     MatPaginatorModule,
     ReactiveFormsModule,
     MatMenuModule,
     MatFormFieldModule,
     MatInputModule,
-
+    MatButtonModule,
     Ng2SearchPipeModule,
+    TranslateModule,
   ],
 })
 export class Tab2Page implements OnInit, OnDestroy, AfterViewInit {
@@ -62,6 +69,7 @@ export class Tab2Page implements OnInit, OnDestroy, AfterViewInit {
   listOfInvitee: any;
   guestIn: any;
   eventname: string;
+  InviteesTable: typeof InviteesTable = InviteesTable;
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
   event_id: any;
@@ -88,8 +96,21 @@ export class Tab2Page implements OnInit, OnDestroy, AfterViewInit {
     private service: ServiceService,
     private loadingCtrl: LoadingController,
     private router: Router,
-    private animationCtrl: AnimationController
+    private animationCtrl: AnimationController,
+    private iconRegistry: MatIconRegistry,
+    private sanitizer: DomSanitizer
   ) {}
+  private registerIcons(
+    iconRegistry: MatIconRegistry,
+    sanitizer: DomSanitizer
+  ) {
+    iconRegistry.addSvgIcon(
+      'qr-code-scan',
+      sanitizer.bypassSecurityTrustResourceUrl(
+        '/assets/boostrap-icons/qr-code-scan.svg'
+      )
+    );
+  }
   private dataSourceFilter() {
     let filterPredicate = (data: any, filter: string) => {
       return (
@@ -114,6 +135,7 @@ export class Tab2Page implements OnInit, OnDestroy, AfterViewInit {
     );
   }
   ngOnInit() {
+    this.registerIcons(this.iconRegistry, this.sanitizer);
     this.requestInviteesList();
     this.searchInputChanged();
   }
@@ -160,7 +182,17 @@ export class Tab2Page implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy(): void {
     this.subscriptions.forEach((s) => s.unsubscribe());
   }
-  async sendQr(qrcode: any) {
+  scanVisitor(index: number) {
+    let swal = AppUtilities.confirmAction(
+      `Are you sure you want to scan ${this.listOfInvitee[index].visitor_name} to event.`
+    );
+    swal.then((result) => {
+      if (result.isConfirmed) {
+        this.sendQr(this.listOfInvitee[index].qr_code);
+      }
+    });
+  }
+  sendQr(qrcode: any) {
     const body = { qr_code: qrcode, event_id: this.event_id };
     AppUtilities.startLoading(this.loadingCtrl)
       .then((loading) => {
@@ -172,7 +204,6 @@ export class Tab2Page implements OnInit, OnDestroy, AfterViewInit {
               next: (res) => {
                 this.result = res;
                 this.qrResponse = this.result;
-                console.log(JSON.stringify(this.result), 'response');
                 if (this.result.message) {
                   AppUtilities.showErrorMessage('', this.result.message);
                 } else if (this.qrResponse) {
@@ -198,7 +229,21 @@ export class Tab2Page implements OnInit, OnDestroy, AfterViewInit {
         throw err;
       });
   }
-  async doRefresh(event) {
+  getTableValue(invitee: any, index: number) {
+    switch (index) {
+      case InviteesTable.VISITOR_NAME:
+        return invitee.visitor_name;
+      case InviteesTable.MOBILE:
+        return invitee.mobile_no;
+      case InviteesTable.SIZE:
+        return invitee.no_of_persons;
+      case InviteesTable.TABLE:
+        return invitee.table_number;
+      default:
+        return '';
+    }
+  }
+  doRefresh(event) {
     //this.verifycardlist();
     this.requestInviteesList();
     setTimeout(() => {

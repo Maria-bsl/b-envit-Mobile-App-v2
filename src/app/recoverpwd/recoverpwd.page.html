@@ -1,36 +1,3 @@
-<!-- <ion-content>
-  <div class="content ion-padding">
-    <div class="ion-text-center">
-      <img src="assets/icon/E-nvit.jpg" />
-    </div>
-    <div class="ion-text-center heading ion-padding">Reset Password</div>
-    <div class="ion-text-center ion-padding">
-      <p>Please Enter valid mobile number</p>
-    </div>
-    <p style="width: 100%; margin-top: -15px">
-      <mat-form-field appearance="outline" style="width: 100%">
-        <mat-label>Mobile Number</mat-label>
-        <input
-          matInput
-          placeholder="Mobile number"
-          [(ngModel)]="PostData.mobile_number"
-          type="number"
-        />
-      </mat-form-field>
-    </p>
-    <ion-button expand="block" (click)="forgetpwd()">SEND</ion-button>
-    <hr class="line" />
-    <div class="ion-text-left link">
-      Have an Acount?
-      <ion-router-link
-        (click)="loginpage()"
-        style="font-weight: 800; margin-left: 20px"
-        >Login</ion-router-link
-      >
-    </div>
-  </div>
-</ion-content> -->
-
 <ion-content>
   <form
     id="reset-password-form"
@@ -41,17 +8,21 @@
     <div class="ion-text-center">
       <img src="assets/icon/E-nvit.jpg" />
     </div>
-    <div class="ion-text-center heading ion-padding">Reset Password</div>
+    <div class="ion-text-center heading ion-padding">
+      {{"forgotPasswordPage.title" | translate}}
+    </div>
     <div class="ion-text-center ion-padding">
-      <p>Please Enter valid mobile number</p>
+      <ion-text> {{"forgotPasswordPage.welcomeText" | translate}} </ion-text>
     </div>
     <div class="d-flex flex-column w-100">
-      <div class="fw-bold small">Mobile Number</div>
+      <div class="fw-bold small">
+        {{"loginPage.loginForm.labels.mobileNumber" | translate}}
+      </div>
       <mat-form-field appearance="outline" style="width: 100%">
         <input
           placeholder="Enter Mobile"
           matInput
-          placeholder="Mobile number"
+          placeholder="{{'loginPage.loginForm.labels.mobileNumber' | translate}}"
           [formControl]="mobile_number"
           type="tel"
         />
@@ -60,14 +31,16 @@
           *ngIf="mobile_number.value && !mobile_number.value.startsWith('0') "
           align="end"
         >
-          <strong> Mobile numbers must start with 0. </strong>
+          <strong>
+            {{'loginPage.loginForm.hints.mobileNumber' | translate}}
+          </strong>
         </mat-hint>
         <mat-error>
           <ng-container *ngIf="mobile_number.hasError('required');">
-            Please fill
+            {{'defaults.errors.pleaseFill' | translate}}
           </ng-container>
           <ng-container *ngIf="mobile_number.hasError('pattern');">
-            Invalid phone number.
+            {{"loginPage.loginForm.errors.invalidPhoneNumber" | translate}}
           </ng-container>
         </mat-error>
       </mat-form-field>
@@ -80,11 +53,11 @@
       type="submit"
       class="w-100 mt-3"
     >
-      SEND
+      {{"forgotPasswordPage.actions.send" | translate}}
     </button>
     <hr class="line" />
     <button (click)="loginpage()" mat-button type="button" color="primary">
-      I have an account
+      {{"forgotPasswordPage.haveAccountText" | translate}}
     </button>
   </form>
 </ion-content>

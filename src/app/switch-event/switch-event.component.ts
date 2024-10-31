@@ -18,6 +18,8 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatLegacyButtonModule as MatButtonModule } from '@angular/material/legacy-button';
 import { NavbarComponent } from '../components/layouts/navbar/navbar.component';
 import { Subscription } from 'rxjs';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateConfigService } from '../translate-config.service';
 
 @Component({
   selector: 'app-switch-event',
@@ -33,6 +35,7 @@ import { Subscription } from 'rxjs';
     ReactiveFormsModule,
     MatButtonModule,
     NavbarComponent,
+    TranslateModule,
   ],
 })
 export class SwitchEventComponent implements OnInit, OnDestroy {
@@ -102,29 +105,28 @@ export class SwitchEventComponent implements OnInit, OnDestroy {
               next: (result: any) => {
                 localStorage.setItem(
                   AppUtilities.TOKEN_user,
-                  JSON.stringify(result.user_id)
+                  result.user_id.toString()
                 );
                 localStorage.setItem(
                   AppUtilities.TOKEN_Cstomer,
-                  JSON.stringify(result.customer_admin_id)
+                  result.customer_admin_id.toString()
                 );
               },
               error: (error) => {
                 loading.dismiss();
                 throw error;
               },
+              complete: () => {
+                this.openSelectedEvent(selected);
+              },
             })
         );
       })
-      .then(() => {
-        this.openSelectedEvent(selected);
-      })
+      // .then(() => {
+      //   this.openSelectedEvent(selected);
+      // })
       .catch((err) => {
         throw err;
       });
-  }
-  logout() {
-    localStorage.clear();
-    this.router.navigate(['login']);
   }
 }

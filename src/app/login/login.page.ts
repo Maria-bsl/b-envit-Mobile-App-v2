@@ -35,6 +35,8 @@ import { AppUtilities } from '../core/utils/app-utilities';
 import { LoginResponse } from '../core/response/LoginResponse';
 import { EventDetailsResponse } from '../core/response/EventDetailsResponse';
 import { DomSanitizer } from '@angular/platform-browser';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateConfigService } from '../translate-config.service';
 
 @Component({
   selector: 'app-login',
@@ -55,11 +57,13 @@ import { DomSanitizer } from '@angular/platform-browser';
     MatButtonModule,
     ReactiveFormsModule,
     MatIconModule,
+    TranslateModule,
   ],
 })
 export class LoginPage implements OnInit, OnDestroy {
   loginForm!: FormGroup;
   subscriptions: Subscription[] = [];
+  language: any;
   constructor(
     private fb: FormBuilder,
     private loadingCtrl: LoadingController,
@@ -67,10 +71,14 @@ export class LoginPage implements OnInit, OnDestroy {
     private router: Router,
     private service: ServiceService,
     private iconRegistry: MatIconRegistry,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private translateConfigService: TranslateConfigService,
+    private translate: TranslateService
   ) {
-    this.createLoginFormGroup();
     this.registerIcons(iconRegistry, sanitizer);
+    this.translateConfigService.getDefaultLanguage();
+    this.language = this.translateConfigService.getCurrentLang();
+    this.createLoginFormGroup();
   }
   private createLoginFormGroup() {
     this.loginForm = this.fb.group({
@@ -105,10 +113,13 @@ export class LoginPage implements OnInit, OnDestroy {
         state: { data: res.event_details },
         replaceUrl: true,
       });
-      //this.openDialog(res.event_details);
     } else {
-      AppUtilities.showErrorMessage('Failed', res.message);
-      this.router.navigate(['login']);
+      this.translate.get('defaults.errors.failed').subscribe({
+        next: (message) => {
+          AppUtilities.showErrorMessage(message, res.message);
+          this.router.navigate(['login']);
+        },
+      });
     }
   }
   async onClickLogin() {
@@ -126,11 +137,17 @@ export class LoginPage implements OnInit, OnDestroy {
                 },
                 error: (err: HttpErrorResponse) => {
                   loading.dismiss();
-                  AppUtilities.showErrorMessage(
-                    'Login failed',
-                    err.error.message
-                  );
-                  this.router.navigate(['login']);
+                  this.translate
+                    .get('loginPage.loginForm.errors.loginFailed')
+                    .subscribe({
+                      next: (message) => {
+                        AppUtilities.showErrorMessage(
+                          message,
+                          err.error.message
+                        );
+                        this.router.navigate(['login']);
+                      },
+                    });
                 },
               })
           );

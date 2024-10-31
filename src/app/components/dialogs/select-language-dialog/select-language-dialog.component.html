@@ -1,0 +1,41 @@
+<form
+  [formGroup]="formGroup"
+  (ngSubmit)="changeLanguage()"
+  id="change-password-form"
+  class="d-flex flex-column w-100"
+>
+  <ion-text class="display-6 fw-bold">{{
+    "navbar.selectLanguage.changeLanguageText" | translate
+  }}</ion-text>
+  <div class="d-flex flex-column w-100 mt-4">
+    <ion-text class="small fw-bold mb-1">{{
+      "navbar.selectLanguage.languageText" | translate
+    }}</ion-text>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>{{
+        "navbar.selectLanguage.selectLanguageText" | translate
+      }}</mat-label>
+      <mat-select [formControl]="language">
+        <mat-option
+          [value]="lang.code"
+          *ngFor="let lang of languages; index as ind"
+        >
+          {{ lang.title }}
+        </mat-option>
+      </mat-select>
+      <mat-error> Please enter attending invitees. </mat-error>
+    </mat-form-field>
+  </div>
+  <div class="d-inline-flex justify-content-end">
+    <button
+      color="accent"
+      form="change-password-form"
+      class="my-4"
+      expand="block"
+      mat-raised-button
+      type="ngSubmit"
+    >
+      {{ "defaults.actions.confirm" | translate }}
+    </button>
+  </div>
+</form>

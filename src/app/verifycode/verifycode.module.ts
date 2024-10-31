@@ -12,13 +12,13 @@ import { NavbarComponent } from '../components/layouts/navbar/navbar.component';
 
 @NgModule({
   imports: [
-    NavbarComponent,
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    MatMenuModule,
+    // NavbarComponent,
+    // CommonModule,
+    // FormsModule,
+    // IonicModule,
+    // MatMenuModule,
     VerifycodePageRoutingModule,
   ],
-  declarations: [VerifycodePage],
+  //declarations: [VerifycodePage],
 })
 export class VerifycodePageModule {}

@@ -12,14 +12,14 @@ import { NavbarComponent } from '../components/layouts/navbar/navbar.component';
 
 @NgModule({
   imports: [
-    NavbarComponent,
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    MatSelectModule,
-    ReactiveFormsModule,
+    // NavbarComponent,
+    // CommonModule,
+    // FormsModule,
+    // IonicModule,
+    // MatSelectModule,
+    // ReactiveFormsModule,
     VerifyuserPageRoutingModule,
   ],
-  declarations: [VerifyuserPage],
+  //declarations: [VerifyuserPage],
 })
 export class VerifyuserPageModule {}
