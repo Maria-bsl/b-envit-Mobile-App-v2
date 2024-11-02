@@ -11,6 +11,7 @@ import {
   MatLegacyDialog as MatDialog,
   MatLegacyDialogModule as MatDialogModule,
 } from '@angular/material/legacy-dialog';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-navbar',
@@ -33,7 +34,8 @@ export class NavbarComponent implements OnInit {
     private loadingCtrl: LoadingController,
     private translateConfigService: TranslateConfigService,
     private translate: TranslateService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private location: Location
   ) {
     this.translateConfigService.getDefaultLanguage();
     this.language = this.translateConfigService.getCurrentLang();
@@ -72,6 +74,12 @@ export class NavbarComponent implements OnInit {
         dialogRef.close();
       },
     });
+  }
+  logoClicked() {
+    if (this.router.url === '/switch') {
+    } else {
+      this.router.navigate(['/tabs/dashboard']);
+    }
   }
   logout() {
     AppUtilities.startLoading(this.loadingCtrl).then((loading) => {

@@ -14,7 +14,7 @@ export class AppComponent {
     private platform: Platform,
     private router: Router
   ) {
-    //this.initializeApp();
+    this.initializeApp();
   }
 
   initializeApp() {
