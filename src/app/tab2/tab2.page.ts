@@ -182,13 +182,13 @@ export class Tab2Page implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy(): void {
     this.subscriptions.forEach((s) => s.unsubscribe());
   }
-  scanVisitor(index: number) {
+  scanVisitor(index: any) {
     let swal = AppUtilities.confirmAction(
-      `Are you sure you want to scan ${this.listOfInvitee[index].visitor_name} to event.`
+      `Are you sure you want to scan ${this.dataSource.filteredData[index].visitor_name} to event.`
     );
     swal.then((result) => {
       if (result.isConfirmed) {
-        this.sendQr(this.listOfInvitee[index].qr_code);
+        this.sendQr(this.dataSource.filteredData[index].qr_code);
       }
     });
   }

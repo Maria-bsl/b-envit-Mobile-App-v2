@@ -294,9 +294,11 @@ export class DashboardPage implements OnInit, AfterViewInit, OnDestroy {
     this.isScanning = show;
     if (show) {
       body.style.visibility = 'hidden';
+      window.document.body.classList.add('scan-box');
       window.document.body.style.backgroundColor = 'transparent';
     } else {
       body.style.visibility = 'visible';
+      window.document.body.classList.remove('scan-box');
       window.document.body.style.backgroundColor = '#FFFFFF';
     }
   }
@@ -315,7 +317,6 @@ export class DashboardPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   startScanning() {
-    //Optionally request the permission early
     this.qrScanner
       .prepare()
       .then((status) => {
