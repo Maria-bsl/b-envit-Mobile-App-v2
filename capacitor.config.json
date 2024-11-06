@@ -1,6 +1,6 @@
 {
-	"appId": "io.ionic.starter",
-	"appName": "Ecard",
-	"webDir": "www",
-	"bundledWebRuntime": false
+  "appId": "io.bizlogicsolutions.envit",
+  "appName": "Envit",
+  "webDir": "www",
+  "bundledWebRuntime": false
 }
