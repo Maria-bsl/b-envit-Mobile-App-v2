@@ -3,9 +3,9 @@
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
     <ion-refresher-content
       pullingIcon="chevron-down-circle-outline"
-      pullingText="Pull to refresh"
+      pullingText="{{'refresher.pullingText' | translate}}"
       refreshingSpinner="circles"
-      refreshingText="Refreshing..."
+      refreshingText="{{'refresher.refreshingText' | translate}}"
     >
     </ion-refresher-content>
   </ion-refresher>
@@ -62,42 +62,10 @@
               class="d-flex align-items-center justify-content-between border-b p-1"
             >
               <ion-text class="fw-bold"></ion-text>
-              <button mat-icon-button (click)="scanVisitor(ind)">
+              <button mat-icon-button (click)="scanVisitor(invitee)">
                 <mat-icon svgIcon="qr-code-scan" matPrefix></mat-icon>
               </button>
             </div>
-            <!-- <div
-              class="d-flex align-items-center justify-content-between border-b p-1"
-            >
-              <ion-text class="fw-bold">Visitor Name</ion-text>
-              <ion-text class="text-right">{{invitee.visitor_name}}</ion-text>
-            </div>
-            <div
-              class="d-flex align-items-center justify-content-between border-b p-1"
-            >
-              <ion-text class="fw-bold">Mobile</ion-text>
-              <ion-text class="text-right">{{invitee.mobile_no}}</ion-text>
-            </div>
-            <div
-              class="d-flex align-items-center justify-content-between border-b p-1"
-            >
-              <ion-text class="fw-bold">Size</ion-text>
-              <ion-text class="text-right">{{invitee.no_of_persons}}</ion-text>
-            </div>
-            <div
-              class="d-flex align-items-center justify-content-between border-b p-1"
-            >
-              <ion-text class="fw-bold">Table No.</ion-text>
-              <ion-text class="text-right">{{invitee.table_number}}</ion-text>
-            </div>
-            <div
-              class="d-flex align-items-center justify-content-between border-b p-1"
-            >
-              <ion-text class="fw-bold"></ion-text>
-              <button mat-icon-button (click)="scanVisitor(ind)">
-                <mat-icon svgIcon="qr-code-scan" matPrefix></mat-icon>
-              </button>
-            </div> -->
           </div>
         </div>
       </ng-container>
@@ -133,7 +101,7 @@
                   <ion-text>{{getTableValue(invitee,i)}}</ion-text>
                 </td>
                 <td>
-                  <button mat-icon-button (click)="scanVisitor(ind)">
+                  <button mat-icon-button (click)="scanVisitor(invitee)">
                     <mat-icon svgIcon="qr-code-scan" matPrefix></mat-icon>
                   </button>
                 </td>
@@ -155,6 +123,7 @@
         #paginator
         [length]="dataSource.data.length"
         [pageSize]="5"
+        [pageSizeOptions]="[5, 10, 20]"
         aria-label="Select page"
         [showFirstLastButtons]="true"
       >
